@@ -11,7 +11,6 @@ CREATE TABLE IF NOT EXISTS `employees` (
 CREATE TABLE IF NOT EXISTS `departments` (
     `id` INT AUTO_INCREMENT,
     `name` VARCHAR(100) NOT NULL,
-    `head_id` INT,
     PRIMARY KEY (`id`),
     FOREIGN KEY (`head_id`) REFERENCES `employees` (`id`) ON DELETE CASCADE
 );
@@ -20,6 +19,7 @@ CREATE TABLE IF NOT EXISTS `departments_employees` (
     `id` INT AUTO_INCREMENT,
     `department_id` INT,
     `employee_id` INT,
+    `is_head` TINYINT(1) NOT NULL,
     FOREIGN KEY (`department_id`) REFERENCES `departments` (`id`) ON DELETE CASCADE,
     FOREIGN KEY (`employee_id`) REFERENCES `employees` (`id`) ON DELETE CASCADE
 );
@@ -48,7 +48,7 @@ CREATE TABLE IF NOT EXISTS `tasks` (
     `description` TEXT NOT NULL,
     `created` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     `deadline` DATETIME DEFAULT NULL,
-    `status` ENUM(`Pending`, `In progress`, `On review`, `Completed`) NOT NULL DEFAULT 'Pending',
+    `status` ENUM(`Pending`, `In progress`, `Completed`) NOT NULL DEFAULT 'Pending',
     PRIMARY KEY (`id`),
 );
 
