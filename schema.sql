@@ -1,3 +1,6 @@
+CREATE DATABASE IF NOT EXISTS `ems`;
+USE `ems`;
+
 CREATE TABLE IF NOT EXISTS `employees` (
     `id` INT AUTO_INCREMENT,
     `name` VARCHAR(100) NOT NULL,
