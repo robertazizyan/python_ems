@@ -21,6 +21,7 @@ BEGIN
     JOIN `departments_employees` ON `employees`.`id` = `departments_employees`.`employee_id`
     JOIN `departments` ON `departments_employees`.`department_id` = `departments`.`id`
     JOIN `projects_employees` ON `employees`.`id` = `projects_employees`.`employee_id`
+    JOIN `projects` ON `projects_employees`.`project_id` = `projects`.`id`
     WHERE `projects_employees`.`project_id` = pr_id AND `projects`.`finish` > CURRENT_DATE
     ORDER BY `department`, `role`;
 END ::
