@@ -83,7 +83,7 @@ BEGIN
     
     SET @empl_id := LAST_INSERT_ID();
 
-    INSERT INTO `employees_departments` (`department_id`, `employee_id`, `is_head`) VALUES (dep_id, @empl_id, head);
+    INSERT INTO `departments_employees` (`department_id`, `employee_id`, `is_head`) VALUES (dep_id, @empl_id, head);
 END ::
 DELIMITER ;
 
@@ -96,7 +96,7 @@ CREATE PROCEDURE `add_project` (
     IN `pr_finish` DATE
 )
 BEGIN
-    INSERT INTO `projects` (`name`, `description`, `start`, `finish`) VALUES (pr_name, pr_description, IFNULL(pr_start, NULL), IFNULL(pr_finish, NULL));
+    INSERT INTO `projects` (`name`, `description`, `start`, `finish`) VALUES (pr_name, pr_desc, IFNULL(pr_start, NULL), IFNULL(pr_finish, NULL));
 END ::
 DELIMITER ;
 
@@ -122,15 +122,14 @@ CREATE PROCEDURE `add_task` (
     IN `empl_id` INT
 )
 BEGIN
+    DECLARE tsk_id INT;
     INSERT INTO `tasks` (`name`, `description`, `deadline`) VALUES (task_name, task_desc, task_dl);
-
-    SET @tsk_id := LAST_INSERT_ID();
-
+    SET tsk_id := LAST_INSERT_ID();
     INSERT INTO `projects_tasks` (`project_id`, `task_id`) VALUES (pr_id, tsk_id);
-
     INSERT INTO `employees_tasks` (`employee_id`, `task_id`) VALUES (empl_id, tsk_id);
 END ::
 DELIMITER ;
+
 
 --------------------------------------------------------------------------------------------------------------------------------
 -- ALL DELETING PROCEDURES

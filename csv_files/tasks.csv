@@ -1,0 +1,97 @@
+name,description,deadline,project_id,employee_id
+Task 1,Develop user interface for the mobile health app,2024-01-31 17:00:00,1,1
+Task 2,Implement backend functionality for the health app,2024-03-10 17:00:00,1,1
+Task 3,Design eco-friendly elements for the website,2024-03-15 17:00:00,1,2
+Task 4,Code website features for improved sustainability,2024-03-30 17:00:00,1,2
+Task 5,Create data analysis algorithms for the platform,2024-04-15 17:00:00,1,3
+Task 6,Implement data visualization tools,2024-04-30 17:00:00,1,3
+Task 7,Upgrade network infrastructure,2024-05-15 17:00:00,1,4
+Task 8,Enhance IT security protocols,2024-05-31 17:00:00,1,4
+Task 9,Launch marketing campaign for the new product,2024-06-15 17:00:00,1,5
+Task 10,Coordinate global marketing efforts,2024-06-30 17:00:00,1,5
+Task 11,Test mobile app functionality,2024-03-01 17:00:00,1,6
+Task 12,Optimize health app performance,2024-03-15 17:00:00,1,6
+Task 13,Update website content and layout,2024-04-01 17:00:00,1,7
+Task 14,Implement sustainability features,2024-04-15 17:00:00,1,7
+Task 15,Test data analysis algorithms,2024-05-01 17:00:00,1,8
+Task 16,Refine data visualization tools,2024-05-15 17:00:00,1,8
+Task 17,Upgrade server infrastructure,2024-06-01 17:00:00,1,9
+Task 18,Conduct IT security training,2024-06-15 17:00:00,1,9
+Task 19,Prepare product launch materials,2024-07-01 17:00:00,1,10
+Task 20,Coordinate launch event logistics,2024-07-15 17:00:00,1,10
+Task 21,Design user authentication system,2024-03-02 17:00:00,1,11
+Task 22,Implement user registration functionality,2024-03-16 17:00:00,1,11
+Task 23,Create website landing page,2024-04-02 17:00:00,1,12
+Task 24,Optimize website performance,2024-04-16 17:00:00,1,12
+Task 25,Develop predictive analytics algorithms,2024-05-02 17:00:00,2,13
+Task 26,Improve data visualization aesthetics,2024-05-16 17:00:00,2,13
+Task 27,Install network monitoring tools,2024-06-02 17:00:00,2,14
+Task 28,Conduct security vulnerability assessments,2024-06-16 17:00:00,2,14
+Task 29,Create social media content for product launch,2024-07-02 17:00:00,2,15
+Task 30,Plan and execute launch event marketing,2024-07-16 17:00:00,2,15
+Task 31,Debug mobile app code,2024-03-03 17:00:00,2,16
+Task 32,Implement user profile features,2024-03-17 17:00:00,2,16
+Task 33,Optimize website SEO,2024-04-03 17:00:00,2,17
+Task 34,Integrate sustainability metrics into website,2024-04-17 17:00:00,2,17
+Task 35,Test machine learning models,2024-05-03 17:00:00,2,18
+Task 36,Enhance data visualization interactivity,2024-05-17 17:00:00,2,18
+Task 37,Configure firewalls for enhanced security,2024-06-03 17:00:00,2,19
+Task 38,Implement multi-factor authentication,2024-06-17 17:00:00,2,19
+Task 39,Create product demo videos,2024-07-03 17:00:00,2,20
+Task 40,Coordinate launch event promotions,2024-07-17 17:00:00,2,20
+Task 41,Code user data encryption,2024-03-04 17:00:00,2,21
+Task 42,Implement push notification system,2024-03-18 17:00:00,2,21
+Task 43,Create website content for sustainability,2024-04-04 17:00:00,2,22
+Task 44,Optimize website loading speed,2024-04-18 17:00:00,2,22
+Task 45,Develop anomaly detection algorithms,2024-05-04 17:00:00,2,23
+Task 46,Refine data visualization responsiveness,2024-05-18 17:00:00,2,23
+Task 47,Implement intrusion detection system,2024-06-04 17:00:00,2,24
+Task 48,Conduct security awareness workshops,2024-06-18 17:00:00,2,24
+Task 49,Prepare press releases for product launch,2024-07-04 17:00:00,3,25
+Task 50,Execute online advertising for launch event,2024-07-18 17:00:00,3,25
+Task 51,Test app compatibility with various devices,2024-03-05 17:00:00,3,26
+Task 52,Implement user feedback system,2024-03-19 17:00:00,3,26
+Task 53,Write blog posts about website redesign,2024-04-05 17:00:00,3,27
+Task 54,Optimize website for mobile devices,2024-04-19 17:00:00,3,27
+Task 55,Test and validate predictive models,2024-05-05 17:00:00,3,28
+Task 56,Improve data visualization accessibility,2024-05-19 17:00:00,3,28
+Task 57,Implement network segmentation,2024-06-05 17:00:00,3,29
+Task 58,Review and update security policies,2024-06-19 17:00:00,3,29
+Task 59,Coordinate influencer partnerships,2024-07-05 17:00:00,3,30
+Task 60,Monitor and analyze launch event performance,2024-07-19 17:00:00,3,30
+Task 61,Debug app compatibility issues,2024-03-06 17:00:00,3,31
+Task 62,Implement user engagement features,2024-03-20 17:00:00,3,31
+Task 63,Create website content for data analysis,2024-04-06 17:00:00,3,32
+Task 64,Optimize website for search engines,2024-04-20 17:00:00,3,32
+Task 65,Test machine learning model accuracy,2024-05-06 17:00:00,3,33
+Task 66,Enhance data visualization customization,2024-05-20 17:00:00,3,33
+Task 67,Implement endpoint security solutions,2024-06-06 17:00:00,3,34
+Task 68,Conduct security incident response drills,2024-06-20 17:00:00,3,34
+Task 69,Create promotional videos for the launch,2024-07-06 17:00:00,3,35
+Task 70,Analyze and report on launch event outcomes,2024-07-20 17:00:00,3,35
+Task 71,Debug app performance issues,2024-03-07 17:00:00,4,36
+Task 72,Implement user account management system,2024-03-21 17:00:00,4,36
+Task 73,Create documentation for mobile app features,2024-04-07 17:00:00,4,37
+Task 74,Optimize website content for search engines,2024-04-21 17:00:00,4,37
+Task 75,Test and verify website security protocols,2024-05-07 17:00:00,4,38
+Task 76,Improve data analysis algorithms for platform,2024-05-21 17:00:00,4,38
+Task 77,Enhance user interface design for app,2024-06-07 17:00:00,4,39
+Task 78,Implement data encryption measures,2024-06-21 17:00:00,4,39
+Task 79,Create social media plan for product launch,2024-07-07 17:00:00,4,40
+Task 80,Analyze launch event metrics and feedback,2024-07-21 17:00:00,4,40
+Task 81,Debug and optimize app performance,2024-03-08 17:00:00,4,41
+Task 82,Implement user data privacy features,2024-03-22 17:00:00,4,41
+Task 83,Create website content for machine learning,2024-04-08 17:00:00,4,42
+Task 84,Optimize website for various devices,2024-04-22 17:00:00,4,42
+Task 85,Test and validate machine learning models,2024-05-08 17:00:00,4,43
+Task 86,Enhance data visualization for platform,2024-05-22 17:00:00,4,43
+Task 87,Implement network security measures,2024-06-08 17:00:00,4,44
+Task 88,Review and update data security policies,2024-06-22 17:00:00,4,44
+Task 89,Coordinate online advertising strategy,2024-07-08 17:00:00,4,45
+Task 90,Evaluate launch event success and areas for improvement,2024-07-22 17:00:00,4,45
+Task 91,Debug app functionality and address user feedback,2024-03-09 17:00:00,4,46
+Task 92,Implement additional features based on user feedback,2024-03-23 17:00:00,4,46
+Task 93,Create website content for data visualization,2024-04-09 17:00:00,4,47
+Task 94,Optimize website for search engines,2024-04-23 17:00:00,4,47
+Task 95,Test machine learning model accuracy and efficiency,2024-05-09 17:00:00,4,48
+Task 96,Enhance customization options for data visualization,2024-05-23 17:00:00,4,48
