@@ -12,7 +12,7 @@ BEGIN
 END ::
 DELIMITER ;
 
--- Show all employees assigned to a certain project
+-- Show all employees assigned to a certain ACTIVE project
 DELIMITER ::
 CREATE PROCEDURE `get_project_staff` (IN `pr_id` INT)
 BEGIN 
@@ -21,12 +21,12 @@ BEGIN
     JOIN `departments_employees` ON `employees`.`id` = `departments_employees`.`employee_id`
     JOIN `departments` ON `departments_employees`.`department_id` = `departments`.`id`
     JOIN `projects_employees` ON `employees`.`id` = `projects_employees`.`employee_id`
-    WHERE `projects_employees`.`project_id` = pr_id
+    WHERE `projects_employees`.`project_id` = pr_id AND `projects`.`finish` > CURRENT_DATE
     ORDER BY `department`, `role`;
 END ::
 DELIMITER ;
 
--- Show all ACTIVE tasks assigned to an employee with regard to their projects
+-- Show all ACTIVE tasks assigned to an employee with regard to their ACTIVE projects
 DELIMITER ::
 CREATE PROCEDURE `get_employee_tasks` (IN `empl_id` INT)
 BEGIN
@@ -36,12 +36,12 @@ BEGIN
     JOIN `projects` ON `projects_employees`.`project_id` = `projects`.`id`
     JOIN `employees_tasks` ON `employees`.`id` = `employees_tasks`.`employee_id`
     JOIN `tasks` ON `employees_tasks`.`task_id` = `tasks`.`id`
-    WHERE `employees`.`id` = empl_id AND `tasks`.`status` != 'Completed'
+    WHERE `employees`.`id` = empl_id AND `tasks`.`status` != 'Completed' AND `projects`.`finish` > CURRENT_DATE
     ORDER BY `created`, `deadline`;
 END ::
 DELIMITER ;
 
--- Show all ACTIVE tasks related to a certain project with the assigned employee
+-- Show all ACTIVE tasks related to a certain ACTIVE project with the assigned employee
 DELIMITER ::
 CREATE PROCEDURE `get_project_tasks` (IN `pr_id` INT)
 BEGIN
@@ -50,7 +50,8 @@ BEGIN
     JOIN `projects_tasks` ON `tasks`.`id` = `projects_tasks`.`task_id`
     JOIN `employees_tasks` ON `tasks`.`id` = `employees_tasks`.`task_id`
     JOIN `employees` ON `employees_tasks`.`employee_id` = `employees`.`id`
-    WHERE `projects_tasks`.`project_id` = pr_id AND `tasks`.`status` != 'Completed'
+    JOIN `projects` ON `projects_tasks`.`project_id` = `projects`.`id`
+    WHERE `projects_tasks`.`project_id` = pr_id AND `tasks`.`status` != 'Completed' AND `projects`.`finish` > CURRENT_DATE
     ORDER BY `created`, `deadline`, `name`;
 END ::
 DELIMITER ;
@@ -74,16 +75,13 @@ CREATE PROCEDURE `add_employee` (
     IN `empl_password` VARCHAR(100), 
     IN `empl_email` VARCHAR(100), 
     IN `empl_position` VARCHAR(100), 
-    IN `dep_name` VARCHAR(100),
+    IN `dep_id` INT,
     IN `head` TINYINT(1)
 )
 BEGIN
     INSERT INTO `employees` (`name`, `username`, `password`, `email`, `position`) VALUES (empl_name, empl_username, empl_password, empl_email, empl_position);
     
     SET @empl_id := LAST_INSERT_ID();
-
-    DECLARE dep_id INT;
-    SELECT `id` INTO dep_id FROM `departments` WHERE `name` = dep_name;
 
     INSERT INTO `employees_departments` (`department_id`, `employee_id`, `is_head`) VALUES (dep_id, @empl_id, head);
 END ::
@@ -105,17 +103,11 @@ DELIMITER ;
 -- Assign an employee to the project
 DELIMITER ::
 CREATE PROCEDURE `add_employee_to_project` (
-    IN `empl_name` VARCHAR(100),
-    IN `pr_name` VARCHAR(100),
-    IN `empl_role` VARCHAR(100),
+    IN `pr_id` INT,    
+    IN `empl_id` INT,
+    IN `empl_role` VARCHAR(100)
 )
 BEGIN
-    DECLARE pr_id INT;
-    SELECT `id` INTO pr_id FROM `projects` WHERE `name` = `pr_name`;
-
-    DECLARE empl_id INT;
-    SELECT `id` INTO empl_id FROM `employees` WHERE `name` = `empl_name`;
-
     INSERT INTO `projects_employees` (`project_id`, `employee_id`, `role`) VALUES (pr_id, empl_id, empl_role);
 END ::
 DELIMITER ;
@@ -126,21 +118,15 @@ CREATE PROCEDURE `add_task` (
     IN `task_name` VARCHAR(255),
     IN `task_desc` TEXT,
     IN `task_dl` DATETIME,
-    IN `pr_name` VARCHAR(100),
-    IN `empl_name` VARCHAR(100),
+    IN `pr_id` INT,
+    IN `empl_id` INT
 )
 BEGIN
     INSERT INTO `tasks` (`name`, `description`, `deadline`) VALUES (task_name, task_desc, task_dl);
 
     SET @tsk_id := LAST_INSERT_ID();
 
-    DECLARE pr_id INT;
-    SELECT `id` INTO pr_id FROM `projects` WHERE `name` = pr_name;
-
     INSERT INTO `projects_tasks` (`project_id`, `task_id`) VALUES (pr_id, tsk_id);
-
-    DECLARE empl_id INT;
-    SELECT `id` INTO empl_id FROM `employees` WHERE `name` = empl_name;
 
     INSERT INTO `employees_tasks` (`employee_id`, `task_id`) VALUES (empl_id, tsk_id);
 END ::
@@ -210,9 +196,11 @@ DELIMITER ;
 --------------------------------------------------------------------------------------------------------------------------------
 -- Change department data
 DELIMITER ::
-CREATE PROCEDURE `change_department` (IN `dep_id` INT, `new_dep_name` VARCHAR(100))
+CREATE PROCEDURE `change_department` (IN `dep_id` INT, 
+`new_dep_name` VARCHAR(100)
+)
 BEGIN
-    UPDATE `departments` UPDATE `name` = new_dep_name WHERE `id` = dep_id;
+    UPDATE `departments` SET `name` = new_dep_name WHERE `id` = dep_id;
 END ::
 DELIMITER ;
 
@@ -221,7 +209,7 @@ DELIMITER ;
 DELIMITER ::
 CREATE PROCEDURE `change_employee_name` (
     IN `empl_id` INT,
-    IN `empl_name` VARCHAR(255),
+    IN `empl_name` VARCHAR(255)
 )
 BEGIN
     UPDATE `employees` SET `name` = empl_name WHERE `id` = empl_id;
@@ -232,7 +220,7 @@ DELIMITER ;
 DELIMITER ::
 CREATE PROCEDURE `change_employee_username` (
     IN `empl_id` INT,
-    IN `empl_username` VARCHAR(100),
+    IN `empl_username` VARCHAR(100)
 )
 BEGIN
     UPDATE `employees` SET `username` = empl_username WHERE `id` = empl_id;
@@ -254,7 +242,7 @@ DELIMITER ;
 DELIMITER ::
 CREATE PROCEDURE `change_employee_email` (
     IN `empl_id` INT,
-    IN `empl_email` VARCHAR(100),
+    IN `empl_email` VARCHAR(100)
 )
 BEGIN
     UPDATE `employees` SET `email` = empl_email WHERE `id` = empl_id;
@@ -363,6 +351,7 @@ END ::
 DELIMITER ;
 
 -- Change task status
+DELIMITER ::
 CREATE PROCEDURE `change_task_status` (
     IN `tsk_id` INT,
     IN `new_stat` VARCHAR(11)
@@ -384,3 +373,30 @@ BEGIN
     WHERE `employee_id` = old_employee_id AND `task_id` = tsk_id;
 END ::
 DELIMITER ;
+
+--------------------------------------------------------------------------------------------------------------------------------
+-- ALL APP PROCEDURES (Any stand-out queries that will be executed during when the web app is running)
+--------------------------------------------------------------------------------------------------------------------------------
+-- Check the employee credentials and return his data if he is present, otherwise return NULL
+-- Procedure is called before logging in the user
+DELIMITER ::
+CREATE PROCEDURE `check_employee` (
+    IN `empl_username` VARCHAR(100),
+    IN `empl_password` VARCHAR(100),
+    OUT `res` TINYINT(1)
+)
+BEGIN
+    DECLARE empl_count INT;
+    SELECT COUNT(*) INTO empl_count FROM `employees` WHERE `username` = empl_username AND `password` = empl_password;
+    IF empl_count = 1 THEN
+        SELECT `id`, `employees`.`name`, `username`, `password`, `email`, `position`, `department_id`, `departments`.`name` INTO `res` FROM `employees`
+        JOIN `departments_employees` ON `employees`.`id` = `departments_employees`.`employee_id`
+        JOIN `departments` ON `departments_employees`.`department_id` = `departments`.`id`
+        WHERE `username` = empl_username AND `password` = empl_password;
+    ELSE
+        SET res = NULL;
+    END IF;
+END ::
+DELIMITER ;
+
+-- Get the employee data
