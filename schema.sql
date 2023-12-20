@@ -8,6 +8,9 @@ CREATE TABLE IF NOT EXISTS `employees` (
     `password` VARCHAR(100) NOT NULL,
     `email` VARCHAR(100) NOT NULL,
     `position` VARCHAR(100) NOT NULL,
+    `is_head` TINYINT(1) NOT NULL DEFAULT 0,
+    `is_manager` TINYINT(1) NOT NULL DEFAULT 0,
+    `is_admin` TINYINT(1) NOT NULL DEFAULT 0,
     PRIMARY KEY (`id`)
 );
 
@@ -20,7 +23,6 @@ CREATE TABLE IF NOT EXISTS `departments` (
 CREATE TABLE IF NOT EXISTS `departments_employees` (
     `department_id` INT,
     `employee_id` INT,
-    `is_head` TINYINT(1) NOT NULL,
     PRIMARY KEY (`department_id`, `employee_id`),
     FOREIGN KEY (`department_id`) REFERENCES `departments` (`id`) ON DELETE CASCADE,
     FOREIGN KEY (`employee_id`) REFERENCES `employees` (`id`) ON DELETE CASCADE
@@ -50,22 +52,18 @@ CREATE TABLE IF NOT EXISTS `tasks` (
     `description` TEXT NOT NULL,
     `created` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     `deadline` DATETIME DEFAULT NULL,
-    `status` ENUM('Pending', 'In progress', 'Completed') NOT NULL DEFAULT 'Pending',
+    `status` ENUM('Pending', 'In progress', 'Completed', 'Archived') NOT NULL DEFAULT 'Pending',
     PRIMARY KEY (`id`)
-);
-
-CREATE TABLE IF NOT EXISTS `projects_tasks` (
-    `project_id` INT,
-    `task_id` INT,
-    PRIMARY KEY (`project_id`,`task_id`),
-    FOREIGN KEY (`project_id`) REFERENCES `projects` (`id`) ON DELETE CASCADE,
-    FOREIGN KEY (`task_id`) REFERENCES `tasks` (`id`) ON DELETE CASCADE
 );
 
 CREATE TABLE IF NOT EXISTS `employees_tasks` (
     `employee_id` INT,
     `task_id` INT,
-    PRIMARY KEY (`employee_id`, `task_id`),
+    `assigned_by` INT NOT NULL,
+    `project_related` INT DEFAULT NULL,
+    PRIMARY KEY(`employee_id`,`task_id`, `assigned_by`),
     FOREIGN KEY (`employee_id`) REFERENCES `employees` (`id`) ON DELETE CASCADE,
-    FOREIGN KEY (`task_id`) REFERENCES `tasks` (`id`) ON DELETE CASCADE
+    FOREIGN KEY (`task_id`) REFERENCES `tasks` (`id`) ON DELETE CASCADE,
+    FOREIGN KEY(`assigned_by`) REFERENCES `employees`(`id`),
+    FOREIGN KEY (`project_related`) REFERENCES `projects` (`id`) ON DELETE CASCADE
 );
