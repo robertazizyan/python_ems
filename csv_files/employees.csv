@@ -1,49 +1,26 @@
-name,username,password,email,position,dep_id,head
-John Doe,john_doe123,p@ssw0rd,john.doe@email.com,Developer,1,1
-Alice Smith,alice_smith456,securepass,alice.smith@email.com,Manager,1,0
-Bob Johnson,bobj88,bobj_pass,bob.johnson@email.com,Analyst,2,1
-Emily White,em_white42,mysecurepassword,emily.white@email.com,Designer,2,0
-Michael Davis,mikedavis,strongpwd789,michael.davis@email.com,Engineer,3,1
-Samantha Brown,sam.brown20,password123,samantha.brown@email.com,Coordinator,3,0
-David Miller,david_m,davemiller_pass,david.miller@email.com,Team Lead,4,1
-Sophie Anderson,sophie_a,s0phieP@ss,sophie.anderson@email.com,QA Tester,4,0
-Chris Taylor,ctaylor_94,chrisT_pass,chris.taylor@email.com,Developer,5,1
-Eva Robinson,eva_r123,evarobinson_pass,eva.robinson@email.com,Manager,5,0
-Daniel Garcia,daniel_g,daniel1234,daniel.garcia@email.com,Analyst,6,1
-Olivia Moore,olivia_m,passolivia,olivia.moore@email.com,Designer,6,0
-William Clark,wclark89,wclark_pass,william.clark@email.com,Engineer,7,1
-Emma Lewis,emma_lewis,emmaP@ss,emma.lewis@email.com,Coordinator,7,0
-Ryan Foster,ryan_f,ryanpwd456,ryan.foster@email.com,Team Lead,8,1
-Ava Turner,ava_turner,turner_pass,ava.turner@email.com,QA Tester,8,0
-Matthew Hall,matthall55,hallpass,matthew.hall@email.com,Developer,9,1
-Grace Adams,grace_adams,gracepass789,grace.adams@email.com,Manager,9,0
-Liam Reed,liamr,reed123,liam.reed@email.com,Analyst,10,1
-Hannah Lee,hannah_lee,hannahpass,hannah.lee@email.com,Designer,10,0
-Andrew Wright,andy_w,andy_pass,andrew.wright@email.com,Engineer,11,1
-Charlotte Martin,charlotte_m,charl0tteP@ss,charlotte.martin@email.com,Coordinator,11,0
-Jason Carter,jason_c,jasonpwd123,jason.carter@email.com,Team Lead,12,1
-Sophia Nguyen,sophia_n,sophiapass,sophia.nguyen@email.com,QA Tester,12,0
-Dylan Ward,dylan_ward,ward_pass,dylan.ward@email.com,Developer,13,1
-Chloe White,chloe_w,chloe1234,chloe.white@email.com,Manager,13,0
-Nathan Brown,nathanb,brown_pass,nathan.brown@email.com,Analyst,14,1
-Isabella Smith,isabella_s,isabellapass,isabella.smith@email.com,Designer,14,0
-Ethan Turner,ethan_turner,ethanpass789,ethan.turner@email.com,Engineer,15,1
-Mia Johnson,mia_j,mia_pass,mia.johnson@email.com,Coordinator,15,0
-Jacob Miller,jacob_m,jacobpass,jacob.miller@email.com,Team Lead,16,1
-Lily Davis,lilyd,lily_pass,lily.davis@email.com,QA Tester,16,0
-Aiden Wilson,aiden_w,aidenpwd123,aiden.wilson@email.com,Developer,17,1
-Madison Martin,madison_m,madisonpass,madison.martin@email.com,Manager,17,0
-Logan Nguyen,logan_n,logan_pass,logan.nguyen@email.com,Analyst,18,1
-Ella Robinson,ella_r,ellapass,ella.robinson@email.com,Designer,18,0
-Caleb Moore,caleb_m,calebpwd789,caleb.moore@email.com,Engineer,19,1
-Avery Turner,avery_t,avery_pass,avery.turner@email.com,Coordinator,19,0
-Harper Hall,harper_h,harperpass123,harper.hall@email.com,Team Lead,20,1
-Leo Adams,leo_a,leoadams_pass,leo.adams@email.com,QA Tester,20,0
-Zoe Lewis,zoe_lewis,zoe_pass,zoe.lewis@email.com,Developer,21,1
-Mason Carter,mason_c,masonpass,mason.carter@email.com,Manager,21,0
-Aria Ward,aria_ward,ariapass789,aria.ward@email.com,Analyst,22,1
-Jackson White,jackson_w,jackson_pass,jackson.white@email.com,Designer,22,0
-Nora Clark,nora_c,norapass,nora.clark@email.com,Engineer,23,1
-Elijah Martin,elijah_m,elijahpass,elijah.martin@email.com,Coordinator,23,0
-Scarlett Turner,scarlett_t,scarlettpass,scarlett.turner@email.com,Team Lead,24,1
-Emma Johnson,emma_j,emma_pass,emma.johnson@email.com,QA Tester,24,0
+name,username,password,email,position,department_id,is_head,is_manager,is_admin
+Alice Smith,alice_smith456,securepass,alice.smith@email.com,Head of Development and Engineering,1,1,0,0
+Bob Johnson,bobj88,bobj_pass,bob.johnson@email.com,Head of IT operations and Infrastructure,2,1,0,0
+Emily White,em_white42,mysecurepassword,emily.white@email.com,Head of QA and Testing,3,1,0,0
+Michael Davis,mikedavis,strongpwd789,michael.davis@email.com,Head of Cybersecurity,4,1,0,0
+Jason Carter,jason_c,jasonpwd123,jason.carter@email.com,Head of Management,5,1,0,0
+Samantha Brown,sam.brown20,password123,samantha.brown@email.com,Senior Developer,1,0,0,0
+Ryan Foster,ryan_f,ryanpwd456,ryan.foster@email.com, Senior Developer,1,0,0,0
+David Miller,david_m,davemiller_pass,david.miller@email.com,Middle Developer,1,0,0,0
+Sophie Anderson,sophie_a,s0phieP@ss,sophie.anderson@email.com,Middle Developer,1,0,0,0
+Chris Taylor,ctaylor_94,chrisT_pass,chris.taylor@email.com,Junior Developer,1,0,0,0
+Eva Robinson,eva_r123,evarobinson_pass,eva.robinson@email.com,Junior Developer,1,0,0,0
+Daniel Garcia,daniel_g,daniel1234,daniel.garcia@email.com,System Administrator,2,0,0,0
+Olivia Moore,olivia_m,passolivia,olivia.moore@email.com,Network Engineer,2,0,0,0
+William Clark,wclark89,wclark_pass,william.clark@email.com,Infrastructure Manager,2,0,0,0
+Emma Lewis,emma_lewis,emmaP@ss,emma.lewis@email.com,Database Administrator,2,0,0,1
+Ava Turner,ava_turner,turner_pass,ava.turner@email.com,QA Engineer,3,0,0,0
+Matthew Hall,matthall55,hallpass,matthew.hall@email.com,QA Engineer,3,0,0,0
+Grace Adams,grace_adams,gracepass789,grace.adams@email.com,Automation Engineer,3,0,0,0
+Liam Reed,liamr,reed123,liam.reed@email.com,Testing Engineer,3,0,0,0
+Hannah Lee,hannah_lee,hannahpass,hannah.lee@email.com,Cybersecurity Engineer,4,0,0,0
+Andrew Wright,andy_w,andy_pass,andrew.wright@email.com,Cybersecurity Consultant,4,0,0,0
+Charlotte Martin,charlotte_m,charl0tteP@ss,charlotte.martin@email.com,Senior Manager,5,0,1,0
+Sophia Nguyen,sophia_n,sophiapass,sophia.nguyen@email.com,Senior Manager,5,0,1,0
+Dylan Ward,dylan_ward,ward_pass,dylan.ward@email.com,Manager,5,0,0,0
+Chloe White,chloe_w,chloe1234,chloe.white@email.com,Junior Manager,5,0,0,0

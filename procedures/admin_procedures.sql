@@ -14,7 +14,7 @@ DELIMITER ::
 CREATE PROCEDURE `add_employee` (
     IN `empl_name` VARCHAR(100), 
     IN `empl_username` VARCHAR(100), 
-    IN `empl_password` VARCHAR(100), 
+    IN `empl_password` VARCHAR(300), 
     IN `empl_email` VARCHAR(100), 
     IN `empl_position` VARCHAR(100), 
     IN `dep_id` INT,
@@ -105,7 +105,7 @@ DELIMITER ;
 DELIMITER ::
 CREATE PROCEDURE `change_employee_password` (
     IN `empl_id` INT,
-    IN `empl_password` VARCHAR(100)
+    IN `empl_password` VARCHAR(300)
 )
 BEGIN
     UPDATE `employees` SET `password` = empl_password WHERE `id` = empl_id;
@@ -147,7 +147,7 @@ DELIMITER ;
 
 -- Change the is_head of the department state of the employee
 DELIMITER ::
-CREATE PROCEDURE 'change_is_head' (
+CREATE PROCEDURE `change_is_head` (
     IN `empl_id` INT,
     IN `head` TINYINT(1)
 )
@@ -158,7 +158,7 @@ DELIMITER ;
 
 -- Change the is_manager state of the employee
 DELIMITER ::
-CREATE PROCEDURE 'change_is_manager' (
+CREATE PROCEDURE `change_is_manager` (
     IN `empl_id` INT,
     IN `manager` TINYINT(1)
 )

@@ -1,6 +1,7 @@
 import sys
 import mariadb
 import csv
+from werkzeug.security import check_password_hash, generate_password_hash
 
 def main():
     #connect to the database first
@@ -26,7 +27,15 @@ def main():
     with open('csv_files/employees.csv', mode = 'r') as file:
         reader = csv.DictReader(file)
         for line in reader:
-            cur.execute('CALL `add_employee`(?, ?, ?, ?, ?, ?, ?)', (line['name'], line['username'], line['password'], line['email'], line['position'], line['dep_id'], line['head']))
+            cur.execute('CALL `add_employee`(?, ?, ?, ?, ?, ?, ?, ?, ?)', (
+                line['name'], line['username'], 
+                generate_password_hash(line['password']), 
+                line['email'], line['position'], 
+                int(line['department_id']), 
+                int(line['is_head']), 
+                int(line['is_manager']), 
+                int(line['is_admin'])
+            ))
     
     # Add projects
     with open('csv_files/projects.csv', mode = 'r') as file:
@@ -38,13 +47,21 @@ def main():
     with open('csv_files/projects_employees.csv', mode = 'r') as file:
         reader = csv.DictReader(file)
         for line in reader:
-            cur.execute('CALL `add_employee_to_project`(?, ?, ?)', (line['project_id'], line['employee_id'], line['role']))
+            cur.execute('CALL `add_employee_to_project`(?, ?, ?)', (int(line['project_id']), int(line['employee_id']), line['role']))
     
     # Add tasks
     with open('csv_files/tasks.csv', mode = 'r') as file:
         reader = csv.DictReader(file)
         for line in reader:
-            cur.execute('CALL `add_task`(?, ?, ?, ?, ?)', (line['name'], line['description'], line['deadline'], line['project_id'], line['employee_id']))    
+            project_related = int(line['project_related']) if line['project_related'] else None
+            cur.execute('CALL `add_task`(?, ?, ?, ?, ?, ?)', (
+                line['name'], 
+                line['description'], 
+                line['deadline'], 
+                int(line['employee_id']), 
+                int(line['assigned']), 
+                project_related
+            ))    
         
     # Commit all changes to the database    
     conn.commit()

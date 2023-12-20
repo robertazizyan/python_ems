@@ -24,7 +24,7 @@ DELIMITER ;
 -- Remove a task
 DELIMITER ::
 CREATE PROCEDURE `remove_task` (
-    IN `task_id` INT,
+    IN `task_id` INT
 )
 BEGIN
     DELETE FROM `tasks` WHERE `id` = task_id;

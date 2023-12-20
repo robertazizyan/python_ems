@@ -5,7 +5,7 @@ CREATE TABLE IF NOT EXISTS `employees` (
     `id` INT AUTO_INCREMENT,
     `name` VARCHAR(100) NOT NULL,
     `username` VARCHAR(100) NOT NULL,
-    `password` VARCHAR(100) NOT NULL,
+    `password` VARCHAR(300) NOT NULL,
     `email` VARCHAR(100) NOT NULL,
     `position` VARCHAR(100) NOT NULL,
     `is_head` TINYINT(1) NOT NULL DEFAULT 0,
