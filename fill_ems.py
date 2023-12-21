@@ -1,7 +1,6 @@
 import sys
 import mariadb
 import csv
-from werkzeug.security import check_password_hash, generate_password_hash
 
 def main():
     #connect to the database first
@@ -9,7 +8,10 @@ def main():
         conn = mariadb.connect(
             user = 'ems_admin',
             password = 'ems_admin',
-            database = 'ems'
+            host = 'localhost',
+            port = 3306,
+            database = 'ems',
+            autocommit = True
         )
         print('Connected to database')
     except mariadb.Error as e:
@@ -27,16 +29,18 @@ def main():
     with open('csv_files/employees.csv', mode = 'r') as file:
         reader = csv.DictReader(file)
         for line in reader:
+            print(f"adding {line['name']}")
             cur.execute('CALL `add_employee`(?, ?, ?, ?, ?, ?, ?, ?, ?)', (
-                line['name'], line['username'], 
-                generate_password_hash(line['password']), 
+                line['name'], 
+                line['username'], 
+                line['password'], 
                 line['email'], line['position'], 
                 int(line['department_id']), 
                 int(line['is_head']), 
                 int(line['is_manager']), 
                 int(line['is_admin'])
             ))
-    
+            
     # Add projects
     with open('csv_files/projects.csv', mode = 'r') as file:
         reader = csv.DictReader(file, delimiter = ';')
@@ -64,8 +68,8 @@ def main():
             ))    
         
     # Commit all changes to the database    
-    conn.commit()
     print('Database filled successfully')
+    conn.close()
 
 if __name__ == '__main__':
     main()
