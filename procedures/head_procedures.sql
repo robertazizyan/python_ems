@@ -59,7 +59,7 @@ BEGIN
         `employees`.`name` AS `employee`
     FROM `tasks`
     JOIN `employees_tasks` ON `tasks`.`id` = `employees_tasks`.`task_id`
-    JOIN `employees` ON `employees_tasks`.`id` = `employees`.`id`
+    JOIN `employees` ON `employees_tasks`.`employee_id` = `employees`.`id`
     WHERE `tasks`.`status` NOT IN ('Completed', 'Archived')
     ORDER BY `tasks`.`created`, `tasks`.`deadline`;
 END ::

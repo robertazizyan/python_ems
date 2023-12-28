@@ -61,6 +61,22 @@ BEGIN
 END ::
 DELIMITER ;
 
+-- Get project info
+DELIMITER ::
+CREATE PROCEDURE `get_project_info` (
+    IN `pr_id` INT
+)
+BEGIN
+    SELECT 
+        `name`,
+        `description`,
+        `start`,
+        `finish`
+    FROM `projects`
+    WHERE `id` = pr_id;
+END ::
+DELIMITER ;
+
 -- Show all employees assigned to a certain ACTIVE project
 DELIMITER ::
 CREATE PROCEDURE `get_project_staff` (IN `pr_id` INT)

@@ -23,9 +23,10 @@ class User:
     def get_current_projects(self, cur):
         cur.execute('CALL `get_employee_projects`(?)', (self.id, ))
         results = cur.fetchall()
-        keys = ('project_id', 'name', 'description', 'role')
+        keys = ('id', 'name', 'description', 'role')
         projects = tuple(dict(zip(keys, result)) for result in results)
         return projects
+
     
     # Get current employee tasks from the db as a tuple of dictionaries. 
     def get_current_tasks(self, cur):
@@ -42,19 +43,26 @@ class User:
         keys = ('employee_id', 'name', 'email', 'position')
         staff = tuple(dict(zip(keys, result)) for result in results)
         return staff
+
+    def get_project_info(self, project_id, cur):
+        cur.execute('CALL `get_project_info`(?)', (project_id, ))
+        results = cur.fetchone()
+        keys = ('name', 'description', 'start', 'finish')
+        project_info = dict(zip(keys, results))
+        return project_info
     
     # Get the project staff from the db as a tuple of dictionaries
     def get_project_staff(self, project_id, cur):
-        cur.execute('CALL `get_project_staff`(?)', project_id)
+        cur.execute('CALL `get_project_staff`(?)', (project_id, ))
         results = cur.fetchall()
         keys = ('employee_id', 'name', 'email', 'role')
         staff = tuple(dict(zip(keys, result)) for result in results)
         return staff
     
     def get_project_tasks(self, project_id, cur):
-        cur.execute('CALL `get_project_tasks`(?)', project_id) 
+        cur.execute('CALL `get_project_tasks`(?)', (project_id, )) 
         results = cur.fetchall()
-        keys = ('task_id', 'task', 'description', 'created', 'deadline', 'employee')
+        keys = ('task_id', 'name', 'description', 'created', 'deadline', 'employee')
         project_tasks = tuple(dict(zip(keys, result)) for result in results)
         return project_tasks
     
@@ -152,10 +160,10 @@ class Head(User):
     def get_tasks_assigned_by(self, cur):
         cur.execute('CALL `get_tasks_assigned_by`(?)', (self.id, ))
         results = cur.fetchall()
-        keys = ('task_id', 'task_name', 'task_description', 'task_created', 'task_deadline', 'task_status', 'employee_name')
+        keys = ('id', 'name', 'description', 'created', 'deadline', 'status', 'employee')
         tasks = tuple(dict(zip()))
     
-    def change_task(self, task_id, new_name, new_description, new_deadline, cur):
+    def change_task(self, cur, task_id = None, new_name = None, new_description = None, new_deadline = None):
         if self.is_head == 1:
             if new_name:
                 cur.execute('CALL `change_task_name`(?, ?)', (task_id, new_name))
@@ -184,7 +192,7 @@ class Manager(User):
     def get_tasks_assigned_by(self, cur):
         cur.execute('CALL `get_tasks_assigned_by`(?)', (self.id, ))
         results = cur.fetchall()
-        keys = ('task_id', 'task_name', 'task_description', 'task_created', 'task_deadline', 'task_status', 'employee_name')
+        keys = ('task_id', 'name', 'description', 'created', 'deadline', 'status', 'employee')
         tasks = tuple(dict(zip()))
     
     def change_task(self, task_id, new_name, new_description, new_deadline, cur):
@@ -238,8 +246,8 @@ def check_user(username, password):
 def login_required(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
-        if not session.get("user"):
-            return redirect("/login")
+        if not session.get('user'):
+            return redirect('/login')
         return f(*args, **kwargs)
     return decorated_function
 
@@ -255,5 +263,6 @@ def connect(username, password):
     return conn, cur
 
 
-def disconnect(conn):
+def disconnect(conn, cur):
+    cur.close()
     conn.close()

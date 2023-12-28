@@ -22,8 +22,16 @@
                         <ul class="navbar-nav me-auto mt-2">
                             {% if session['user'] %}
                                 <li class="nav-item"><a class="nav-link" href="/">Cabinet</a></li>
-                                <li class="nav-item"><a class="nav-link" href="/logout">Log out</a></li>
+                                <li class="nav-item"><a class="nav-link" href="/department">Department</a></li>
+                                <li class="nav-item"><a class="nav-link" href="/tasks">Tasks</a></li>
                             {% endif %}
+                            {% if session['is_admin'] %}
+                                <li class="nav-item"><a class="nav-link" href="/admin">Admin</a></li>
+                            {% endif %}
+                            {% if session['is_manager'] %}
+                            <li class="nav-item"><a class="nav-link" href="/manager_project">Your project</a></li>
+                            {% endif %}
+                            <li class="nav-item"><a class="nav-link" href="/logout">Log out</a></li>
                         </ul>
                     </div>
                 </div>

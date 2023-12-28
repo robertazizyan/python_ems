@@ -1,0 +1,21 @@
+{% extends "layout.html" %}
+{% block title %}
+    {{department}}
+{% endblock %}
+
+{% block main %}
+    <table>
+        <tr>
+            <th>Employee</th>
+            <th>Email</th>
+            <th>Position</th>
+        </tr>
+        {% for employee in staff %}
+            <tr>
+                <td> {{employee.name}} </td>
+                <td> {{employee.email}} </td>
+                <td> {{employee.position}} </td>
+            </tr>
+        {% endfor %}
+    </table> 
+{% endblock %}
