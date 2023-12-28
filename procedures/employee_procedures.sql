@@ -26,11 +26,13 @@ BEGIN
         `tasks`.`description` AS `description`, 
         `tasks`.`created` AS `created`, 
         `tasks`.`deadline` AS `deadline`,
-        `employees_tasks`.`assigned_by` AS `assigned_by`,
+        `tasks`.`status` AS `status`,
+        `task_giver`.`name` AS `assigned_by`,
         `projects`.`name` AS `project`
     FROM `tasks`
     JOIN `employees_tasks` ON `tasks`.`id` = `employees_tasks`.`task_id`
     JOIN `employees` ON `employees_tasks`.`employee_id` = `employees`.`id`
+    JOIN `employees` AS `task_giver` ON `employees_tasks`.`assigned_by` = `task_giver`.`id`
     JOIN `projects` ON `employees_tasks`.`project_related` = `projects`.`id`
     WHERE 
         `employees`.`id` = empl_id 

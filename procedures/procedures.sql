@@ -6,19 +6,16 @@
 DELIMITER ::
 CREATE PROCEDURE `check_employee` (
     IN `empl_username` VARCHAR(100),
-    OUT `res` TINYINT(1)
+    IN `empl_password` VARCHAR(300)
 )
 BEGIN
     DECLARE empl_count INT;
-    DECLARE res TINYINT(1);
-    SELECT COUNT(*) INTO empl_count FROM `employees` WHERE `username` = empl_username;
+    SELECT COUNT(*) INTO empl_count FROM `employees` WHERE `username` = empl_username AND `password` = empl_password;
     IF empl_count = 1 THEN
-        SELECT `id`, `employees`.`name`, `username`, `password`, `email`, `position`, `is_head`, `is_manager`, `is_admin`, `department_id`, `departments`.`name` INTO `res` FROM `employees`
+        SELECT `employees`.`id`, `employees`.`name`, `username`, `password`, `email`, `position`, `is_head`, `is_manager`, `is_admin`, `department_id`, `departments`.`name` FROM `employees`
         JOIN `departments_employees` ON `employees`.`id` = `departments_employees`.`employee_id`
         JOIN `departments` ON `departments_employees`.`department_id` = `departments`.`id`
         WHERE `username` = empl_username;
-    ELSE
-        SET res = NULL;
     END IF;
 END ::
 DELIMITER ;

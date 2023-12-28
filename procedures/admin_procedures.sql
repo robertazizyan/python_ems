@@ -71,7 +71,7 @@ CREATE PROCEDURE `grant_options` (
     IN is_admin TINYINT(1)    
 )
 BEGIN
-    SET @grant_sql = CONCAT('GRANT SELECT ON `ems`.* TO ''', empl_username, '''@''%''');
+    SET @grant_sql = CONCAT('GRANT SELECT, EXECUTE ON `ems`.* TO ''', empl_username, '''@''%''');
     PREPARE stmt FROM @grant_sql;
     EXECUTE stmt;
     DEALLOCATE PREPARE stmt;
