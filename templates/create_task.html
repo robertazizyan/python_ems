@@ -1,0 +1,42 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    Create a new task
+{% endblock %}
+
+{% block main %}
+    <form action="/tasks/create_task" method = "post">
+        <table>
+            <tr>
+                <th>Employee</th>
+                <th>Task name</th>
+                <th>Task description</th>
+                <th>Deadline Date</th>
+                <th>Deadline Time</th>
+            </tr>
+            
+            <tr>
+                <td>
+                    <select name="employee" required>
+                        {% for employee in staff %}
+                            <option value = {{ employee.employee_id }}>{{ employee.name }}</option>
+                        {% endfor %}
+                    </select>
+                </td>
+                <td>
+                    <input type="text" name="task_name" placeholder="Task Name" required>
+                </td>
+                <td>
+                    <textarea name="task_description" placeholder="Task Description" required></textarea>
+                </td>
+                <td>
+                    <input type="date" name="deadline_date" placeholder="Deadline Date" required>
+                </td>
+                <td>
+                    <input type ="time" name="deadline_time" placeholder="Deadline Time" required>
+                </td>
+            </tr>
+        </table>
+        <button type="submit">Create task</button>
+    </form>
+{% endblock %}

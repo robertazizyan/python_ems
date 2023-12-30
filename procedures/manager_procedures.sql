@@ -39,3 +39,17 @@ BEGIN
     WHERE `project_id` = pr_id AND `employee_id` = empl_id;
 END ::
 DELIMITER ;
+
+-- Get a project where you are the current project manager
+DELIMITER ::
+CREATE PROCEDURE `get_my_project_id` (
+    IN `empl_id` INT
+)
+BEGIN
+    SELECT `project_id` FROM `projects_employees`
+    JOIN `projects` ON `projects`.`id` = `projects_employees`.`project_id`
+    WHERE `employee_id` = empl_id 
+    AND `projects`.`start` < CURRENT_DATE 
+    AND `projects`.`finish` > CURRENT_DATE;
+END ::
+DELIMITER ;

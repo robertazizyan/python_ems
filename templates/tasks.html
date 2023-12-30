@@ -1,8 +1,11 @@
 {% extends "layout.html" %}
+
 {% block title %}
     Tasks
 {% endblock %}
+
 {% block main %}
+
     {% if tasks %}
         <p> Your current tasks </p>
         <table>
@@ -30,6 +33,7 @@
     {% else %}
         You have no active tasks!
     {% endif %}
+
     {% if assigned_tasks %}
         <p> Tasks you have assigned </p>
         <table>
@@ -41,7 +45,7 @@
                 <th>Status</th>
                 <th>Employee</th>
             </tr>
-            {% for task in tasks %}
+            {% for task in assigned_tasks %}
                 <tr>
                     <td> {{task.name}} </td>
                     <td> {{task.description}} </td>
@@ -53,4 +57,10 @@
             {% endfor %}
         </table>
     {% endif %}
+
+    {% if taskmaster %}
+        <a href="/tasks/create_task">Create a new task</a>
+        <a href="/tasks/change_tasks">Modify existing tasks</a>
+    {% endif %}
+
 {% endblock %}

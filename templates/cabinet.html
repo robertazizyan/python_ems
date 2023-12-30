@@ -1,11 +1,14 @@
 {% extends "layout.html" %}
+
 {% block title %}
     Cabinet
 {% endblock %}
+
 {% block main %}
     <p> Your Name: {{user.name}} </p>
     <p> Your Position: {{user.position}} </p>
     <p> Your Department: {{user.department_name}} </p>
+    
     {% if tasks %}
         <p> Your current tasks </p>
         <table>
@@ -31,6 +34,7 @@
             {% endfor %}
         </table>
     {% endif %}
+
     {% if projects %}
         <p> Your current Projects </p>
         <table>
@@ -48,4 +52,5 @@
             {% endfor %}
         </table>
     {% endif %}
+
 {% endblock %}

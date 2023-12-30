@@ -3,6 +3,8 @@ import mariadb
 from werkzeug.security import check_password_hash, generate_password_hash
 from flask import redirect, render_template, session 
 from functools import wraps
+from datetime import datetime
+
 
 class User:
     def __init__(self, empl_data):
@@ -70,7 +72,6 @@ class User:
     def change_task_status(self, task_id, status, cur):
         cur.execute('CALL `change_task_status`(?, ?)', (task_id, status))
         
-    
     
 # A subclass of User that has the ability to change data in the database related to employees, departments and projects  
 class Admin(User):
@@ -149,8 +150,8 @@ class Head(User):
         super().__init__(empl_data)
     
     def add_task(self, task_name, task_description, task_deadline, employee_id, cur):
-        cur.execute('CALL `add_task`(?, ?, ?, ?, ?)', (task_name, task_description, task_deadline, employee_id, self.id))
-    
+        cur.execute('CALL `add_task`(?, ?, ?, ?, ?, NULL)', (task_name, task_description, task_deadline, employee_id, self.id))
+
     def remove_task(self, task_id, cur):
         cur.execute('CALL `remove_task`(?)', (task_id, ))
     
@@ -177,11 +178,19 @@ class Head(User):
     
 # A subclass of User that has the ability to assign/reassign/deassign tasks to the employees in his project 
 class Manager(User):
-    def __init__(self, empl_data):
+    def __init__(self, empl_data, cur):
         super().__init__(empl_data)
-        
-    def add_task(self, task_name, task_description, task_deadline, employee_id, project_id, cur):
-        cur.execute('CALL `add_task`(?, ?, ?, ?, ?, ?)', (task_name, task_description, task_deadline, employee_id, self.id, project_id))
+        pr_id = self.get_my_project_id(cur)
+        self.project_id = pr_id
+        self.staff = self.get_project_staff(pr_id, cur)
+
+    def get_my_project_id(self, cur):
+        cur.execute('CALL `get_my_project_id`(?)', (self.id, ))
+        pr_id = cur.fetchone()[0]
+        return pr_id
+    
+    def add_task(self, task_name, task_description, task_deadline, employee_id, cur):
+        cur.execute('CALL `add_task`(?, ?, ?, ?, ?, ?)', (task_name, task_description, task_deadline, employee_id, self.id, self.project_id))
     
     def remove_task(self, task_id, cur):
         cur.execute('CALL `remove_task`(?)', (task_id, ))
@@ -193,7 +202,8 @@ class Manager(User):
         cur.execute('CALL `get_tasks_assigned_by`(?)', (self.id, ))
         results = cur.fetchall()
         keys = ('task_id', 'name', 'description', 'created', 'deadline', 'status', 'employee')
-        tasks = tuple(dict(zip()))
+        tasks = tuple(dict(zip(keys, result)) for result in results)
+        return tasks
     
     def change_task(self, task_id, new_name, new_description, new_deadline, cur):
         if self.is_head == 1:
@@ -252,7 +262,6 @@ def login_required(f):
     return decorated_function
 
 
-
 def connect(username, password):
     conn = mariadb.connect(
         username = username,
@@ -266,3 +275,7 @@ def connect(username, password):
 def disconnect(conn, cur):
     cur.close()
     conn.close()
+    
+
+def convert_dl(date, time):
+    return datetime.strptime(f'{date} {time}', '%Y-%m-%d %H:%M')
