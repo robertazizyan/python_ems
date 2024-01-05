@@ -63,22 +63,34 @@ def tasks():
     disconnect(conn, cur)
     return render_template('tasks.html', tasks = tasks, assigned_tasks = assigned_tasks, taskmaster = taskmaster)
 
-@app.route('/change_tasks', methods = ['GET', 'POST'])
+@app.route('/tasks/change_task_<id>', methods = ['GET', 'POST'])
 @login_required
-def change_tasks():
+def change_task(id):
     user = session.get('user')
     conn, cur = connect(user.username, user.password)
 
     if request.method == 'POST':
-        ...
+        deadline = convert_dl(request.form.get('deadline_date'), request.form.get('deadline_time'))
+
+        user.change_task(cur, id, request.form.get('task_name'), request.form.get('task_description'), deadline, request.form.get('employee'))
+        conn.commit()
+        
+        disconnect(conn, cur)
+        return redirect('/tasks')
     else:
-        if user.is_head == 1 or user_is_manager == 1:
-            ...
+        if user.is_head == 1:
+            staff = user.get_department_staff(cur)
+        elif user.is_manager == 1:
+            staff = user.get_project_staff(user.project_id, cur)
         else:
             disconnect(conn,cur)
             return redirect('/tasks')
+
+        task = user.get_task_data(id, cur)
+
+        disconnect(conn, cur)
         
-        return render_template('change_tasks.html', tasks = tasks)
+        return render_template('change_task.html', id = id, task = task, staff = staff)
         
     
 @app.route('/tasks/create_task', methods = ['GET', 'POST'])
@@ -91,12 +103,13 @@ def create_task():
         deadline = convert_dl(request.form.get('deadline_date'), request.form.get('deadline_time'))
         user.add_task(request.form.get('task_name'), request.form.get('task_description'), deadline, request.form.get('employee'), cur)
         conn.commit()
+        disconnect(conn, cur)
         return redirect('/tasks')
     else:
         if user.is_head == 1:
             staff = user.get_department_staff(cur)
         elif user.is_manager == 1:
-            staff = user.staff
+            staff = user.get_project_staff(user.project_id, cur)
         else:
             disconnect(conn,cur)
             return redirect('/tasks')

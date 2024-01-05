@@ -47,7 +47,13 @@
             </tr>
             {% for task in assigned_tasks %}
                 <tr>
-                    <td> {{task.name}} </td>
+                    <td>
+                        {% if taskmaster %}
+                            <a href = "{{ url_for('change_task', id = task.task_id)}}">{{task.name}}</a>
+                        {% else %}
+                            {{task.name}}
+                        {% endif %} 
+                    </td>
                     <td> {{task.description}} </td>
                     <td> {{task.created}} </td>
                     <td> {{task.deadline}} </td>
@@ -60,7 +66,6 @@
 
     {% if taskmaster %}
         <a href="/tasks/create_task">Create a new task</a>
-        <a href="/tasks/change_tasks">Modify existing tasks</a>
     {% endif %}
 
 {% endblock %}

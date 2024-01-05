@@ -3,7 +3,7 @@ import mariadb
 from werkzeug.security import check_password_hash, generate_password_hash
 from flask import redirect, render_template, session 
 from functools import wraps
-from datetime import datetime
+from datetime import datetime, time
 
 
 class User:
@@ -28,7 +28,6 @@ class User:
         keys = ('id', 'name', 'description', 'role')
         projects = tuple(dict(zip(keys, result)) for result in results)
         return projects
-
     
     # Get current employee tasks from the db as a tuple of dictionaries. 
     def get_current_tasks(self, cur):
@@ -148,6 +147,14 @@ class Admin(User):
 class Head(User):
     def __init__(self, empl_data):
         super().__init__(empl_data)
+
+    def get_task_data(self, task_id, cur):
+        cur.execute('CALL `get_task_data`(?)', (task_id, ))
+        result = list(cur.fetchone())
+        result[2] = convert_dl_back(result[2])
+        keys = ('name', 'description', 'deadline', 'employee')
+        task = dict(zip(keys, result))
+        return task
     
     def add_task(self, task_name, task_description, task_deadline, employee_id, cur):
         cur.execute('CALL `add_task`(?, ?, ?, ?, ?, NULL)', (task_name, task_description, task_deadline, employee_id, self.id))
@@ -155,16 +162,14 @@ class Head(User):
     def remove_task(self, task_id, cur):
         cur.execute('CALL `remove_task`(?)', (task_id, ))
     
-    def reassign_task(self, task_id, new_empl_id, cur):
-        cur.execute('CALL `reassign_task`(?, ?)', (task_id, new_empl_id))
-    
     def get_tasks_assigned_by(self, cur):
         cur.execute('CALL `get_tasks_assigned_by`(?)', (self.id, ))
         results = cur.fetchall()
-        keys = ('id', 'name', 'description', 'created', 'deadline', 'status', 'employee')
-        tasks = tuple(dict(zip()))
+        keys = ('task_id', 'name', 'description', 'created', 'deadline', 'status', 'employee')
+        tasks = tuple(dict(zip(keys, result)) for result in results)
+        return tasks
     
-    def change_task(self, cur, task_id = None, new_name = None, new_description = None, new_deadline = None):
+    def change_task(self, cur, task_id = None, new_name = None, new_description = None, new_deadline = None, new_employee = None):
         if self.is_head == 1:
             if new_name:
                 cur.execute('CALL `change_task_name`(?, ?)', (task_id, new_name))
@@ -174,6 +179,9 @@ class Head(User):
                 
             if new_deadline:
                 cur.execute('CALL `change_task_deadline`(?, ?)', (task_id, new_deadline))
+            
+            if new_employee:
+                cur.execute('CALL `reassign_task`(?, ?)', (task_id, new_employee))
     
     
 # A subclass of User that has the ability to assign/reassign/deassign tasks to the employees in his project 
@@ -182,21 +190,25 @@ class Manager(User):
         super().__init__(empl_data)
         pr_id = self.get_my_project_id(cur)
         self.project_id = pr_id
-        self.staff = self.get_project_staff(pr_id, cur)
 
     def get_my_project_id(self, cur):
         cur.execute('CALL `get_my_project_id`(?)', (self.id, ))
         pr_id = cur.fetchone()[0]
         return pr_id
     
+    def get_task_data(self, task_id, cur):
+        cur.execute('CALL `get_task_data`(?)', (task_id, ))
+        result = list(cur.fetchone())
+        result[2] = convert_dl_back(result[2])
+        keys = ('name', 'description', 'deadline', 'employee')
+        task = dict(zip(keys, result))
+        return task
+    
     def add_task(self, task_name, task_description, task_deadline, employee_id, cur):
         cur.execute('CALL `add_task`(?, ?, ?, ?, ?, ?)', (task_name, task_description, task_deadline, employee_id, self.id, self.project_id))
     
     def remove_task(self, task_id, cur):
         cur.execute('CALL `remove_task`(?)', (task_id, ))
-    
-    def reassign_task(self, task_id, new_empl_id, cur):
-        cur.execute('CALL `reassign_task`(?, ?)', (task_id, new_empl_id))
     
     def get_tasks_assigned_by(self, cur):
         cur.execute('CALL `get_tasks_assigned_by`(?)', (self.id, ))
@@ -205,8 +217,8 @@ class Manager(User):
         tasks = tuple(dict(zip(keys, result)) for result in results)
         return tasks
     
-    def change_task(self, task_id, new_name, new_description, new_deadline, cur):
-        if self.is_head == 1:
+    def change_task(self, cur, task_id = None, new_name = None, new_description = None, new_deadline = None, new_employee = None):
+        if self.is_manager == 1:
             if new_name:
                 cur.execute('CALL `change_task_name`(?, ?)', (task_id, new_name))
             
@@ -214,7 +226,10 @@ class Manager(User):
                 cur.execute('CALL `change_task_description`(?, ?)', (task_id, new_description))
                 
             if new_deadline:
-                cur.execute('CALL `change_task_deadline`(?, ?)', (task_id, new_deadline))    
+                cur.execute('CALL `change_task_deadline`(?, ?)', (task_id, new_deadline))
+            
+            if new_employee:
+                cur.execute('CALL `reassign_task`(?, ?)', (task_id, new_employee))
 
     def add_employee_to_project(self, pr_id, empl_id, role, cur):
         cur.execute('CALL `add_employee_to_project`(?, ?, ?)', (pr_id, empl_id, role))
@@ -279,3 +294,7 @@ def disconnect(conn, cur):
 
 def convert_dl(date, time):
     return datetime.strptime(f'{date} {time}', '%Y-%m-%d %H:%M')
+
+
+def convert_dl_back(dt):
+    return dt.date(), dt.time().strftime('%H:%M')

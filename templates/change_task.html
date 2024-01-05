@@ -1,0 +1,43 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    Modify task
+{% endblock %}
+
+{% block main %}
+    <form action="{{ url_for('change_task', id = id)}}" method = "post">
+        <table>
+            <tr>
+                <th>Employee</th>
+                <th>Task name</th>
+                <th>Task description</th>
+                <th>Deadline Date</th>
+                <th>Deadline Time</th>
+            </tr>
+            
+            <tr>
+                <td>
+                    <select name="employee">
+                        {% for employee in staff %}
+                            <option value = {{ employee.employee_id }} required>{{ employee.name }}</option>
+                        {% endfor %}
+                    </select>
+                </td>
+                <td>
+                    <input type="text" name="task_name" value ="{{ task.name }}">
+                </td>
+                <td>
+                    <textarea name="task_description" required>{{ task.description }}</textarea>
+                </td>
+                <td>
+                    <input type="date" name="deadline_date" value = {{ task.deadline[0] }} required>
+                </td>
+                <td>
+                    <input type ="time" name="deadline_time" value = {{ task.deadline[1] }} required>
+                </td>
+            </tr>
+        </table>
+        <button type="submit">Modify task</button>
+    </form>
+
+{% endblock %}
