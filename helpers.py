@@ -67,6 +67,14 @@ class User:
         project_tasks = tuple(dict(zip(keys, result)) for result in results)
         return project_tasks
     
+    def get_task_data(self, task_id, cur):
+        cur.execute('CALL `get_task_data`(?)', (task_id, ))
+        result = list(cur.fetchone())
+        result[2] = convert_dl_back(result[2])
+        keys = ('name', 'description', 'deadline', 'given_to', 'given_by')
+        task = dict(zip(keys, result))
+        return task
+    
     # Update the task status
     def change_task_status(self, task_id, status, cur):
         cur.execute('CALL `change_task_status`(?, ?)', (task_id, status))
@@ -147,14 +155,6 @@ class Admin(User):
 class Head(User):
     def __init__(self, empl_data):
         super().__init__(empl_data)
-
-    def get_task_data(self, task_id, cur):
-        cur.execute('CALL `get_task_data`(?)', (task_id, ))
-        result = list(cur.fetchone())
-        result[2] = convert_dl_back(result[2])
-        keys = ('name', 'description', 'deadline', 'employee')
-        task = dict(zip(keys, result))
-        return task
     
     def add_task(self, task_name, task_description, task_deadline, employee_id, cur):
         cur.execute('CALL `add_task`(?, ?, ?, ?, ?, NULL)', (task_name, task_description, task_deadline, employee_id, self.id))
@@ -195,14 +195,6 @@ class Manager(User):
         cur.execute('CALL `get_my_project_id`(?)', (self.id, ))
         pr_id = cur.fetchone()[0]
         return pr_id
-    
-    def get_task_data(self, task_id, cur):
-        cur.execute('CALL `get_task_data`(?)', (task_id, ))
-        result = list(cur.fetchone())
-        result[2] = convert_dl_back(result[2])
-        keys = ('name', 'description', 'deadline', 'employee')
-        task = dict(zip(keys, result))
-        return task
     
     def add_task(self, task_name, task_description, task_deadline, employee_id, cur):
         cur.execute('CALL `add_task`(?, ?, ?, ?, ?, ?)', (task_name, task_description, task_deadline, employee_id, self.id, self.project_id))

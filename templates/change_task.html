@@ -19,7 +19,11 @@
                 <td>
                     <select name="employee">
                         {% for employee in staff %}
-                            <option value = {{ employee.employee_id }} required>{{ employee.name }}</option>
+                            {% if employee.name == task.given_to %}
+                                <option value = {{ employee.employee_id }} selected required>{{ employee.name }}</option>    
+                            {% else %}
+                                <option value = {{ employee.employee_id }} required>{{ employee.name }}</option>
+                            {% endif %}
                         {% endfor %}
                     </select>
                 </td>
@@ -39,5 +43,7 @@
         </table>
         <button type="submit">Modify task</button>
     </form>
-
+    <form action = "{{url_for('remove_task', id = id)}}" method = "post">
+        <button type="submit">Delete task</button>
+    </form>
 {% endblock %}

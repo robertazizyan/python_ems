@@ -60,19 +60,8 @@ BEGIN
     FROM `tasks`
     JOIN `employees_tasks` ON `tasks`.`id` = `employees_tasks`.`task_id`
     JOIN `employees` ON `employees_tasks`.`employee_id` = `employees`.`id`
-    WHERE `tasks`.`status` NOT IN ('Completed', 'Archived') AND `employees_tasks`.`assigned_by` = empl_id
+    WHERE `tasks`.`status` != 'Archived' AND `employees_tasks`.`assigned_by` = empl_id
     ORDER BY `tasks`.`created`, `tasks`.`deadline`;
-END ::
-DELIMITER ;
-
--- Get task data for further modification
-DELIMITER ::
-CREATE PROCEDURE `get_task_data` (IN `tsk_id` INT)
-BEGIN
-    SELECT `tasks`.`name`, `description`, `deadline`, `employees`.`name` AS `employee` FROM `tasks`
-    JOIN `employees_tasks` ON `tasks`.`id` = `employees_tasks`.`task_id`
-    JOIN `employees` ON `employees_tasks`.`employee_id` = `employees`.`id`
-    WHERE `tasks`.`id` = tsk_id;
 END ::
 DELIMITER ;
 

@@ -23,6 +23,24 @@ def index():
     return render_template('cabinet.html', user = user, tasks = tasks, projects = projects)
 
 
+@app.route('/change_task_status_<id>', methods = ['POST'])
+@login_required
+def change_task_status(id):
+    user = session.get('user')
+    conn, cur = connect(user.username, user.password)
+    referrer = request.form.get('referrer', '/')
+    
+    task_data = user.get_task_data(id, cur)
+    if task_data and task_data['given_to'] == user.name or task_data['given_by'] == user.name:
+        user.change_task_status(id, request.form.get('status'), cur)
+        conn.commit()
+        disconnect(conn, cur)
+        return redirect(referrer)
+    else:
+        disconnect(conn, cur)
+        return redirect(referrer)
+
+
 @app.route('/project_<id>')
 @login_required
 def project(id):
@@ -46,6 +64,7 @@ def department():
     
     return render_template('department.html', staff=staff, department = user.department_name)
 
+
 @app.route('/tasks')
 @login_required
 def tasks():
@@ -62,6 +81,7 @@ def tasks():
     
     disconnect(conn, cur)
     return render_template('tasks.html', tasks = tasks, assigned_tasks = assigned_tasks, taskmaster = taskmaster)
+
 
 @app.route('/tasks/change_task_<id>', methods = ['GET', 'POST'])
 @login_required
@@ -91,8 +111,25 @@ def change_task(id):
         disconnect(conn, cur)
         
         return render_template('change_task.html', id = id, task = task, staff = staff)
-        
+
+
+@app.route('/tasks/remove_task_<id>', methods = ['POST'])
+@login_required
+def remove_task(id):
+    user = session.get('user')
+    conn, cur = connect(user.username, user.password)
     
+    if user.is_head == 1 or user.is_manager == 1:
+        user.remove_task(id, cur)
+        conn.commit()
+        print('removed')
+        disconnect(conn, cur)
+        return redirect('/tasks')
+    else:
+        disconnect(conn, cur)
+        return redirect('/tasks')
+
+
 @app.route('/tasks/create_task', methods = ['GET', 'POST'])
 @login_required
 def create_task():

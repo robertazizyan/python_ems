@@ -29,7 +29,23 @@
                     <td> {{task.deadline}} </td>
                     <td> {{task.assigned_by}} </td>
                     <td> {{task.project}} </td>
-                    <td> {{task.status}} </td>
+                    <td>
+                        {% if task.status == 'Pending' %}
+                            <form action = "{{url_for('change_task_status', id = task.task_id, referrer = request.url)}}" method = "post">
+                                {{task.status}}
+                                <input type="hidden" name="status" value="In progress">
+                                <input type="hidden" name="referrer" value="{{ request.url }}">
+                                <button type="submit">Accept task</button>
+                            </form>
+                        {% elif task.status == 'In progress' %}
+                            <form action = "{{url_for('change_task_status', id = task.task_id)}}" method = "post">
+                                {{task.status}}
+                                <input type="hidden" name="status" value="Completed">
+                                <input type="hidden" name="referrer" value="{{ request.url }}">
+                                <button type="submit">Mark completed</button>
+                            </form>                            
+                        {% endif %}
+                    </td>
                 </tr>
             {% endfor %}
         </table>
@@ -43,13 +59,13 @@
                 <th>Description</th>
                 <th>Role</th>
             </tr>
-            {% for project in projects %}
-                <tr>
-                    <td><a href="{{ url_for('project', id = project.id) }}">{{ project.name }}</a></td>
-                    <td> {{project.description}} </td>
-                    <td> {{project.role}} </td>
-                </tr>
-            {% endfor %}
+                {% for project in projects %}
+                    <tr>
+                        <td><a href="{{ url_for('project', id = project.id) }}">{{ project.name }}</a></td>
+                        <td> {{project.description}} </td>
+                        <td> {{project.role}} </td>
+                    </tr>
+                {% endfor %}
         </table>
     {% endif %}
 

@@ -117,6 +117,18 @@ BEGIN
 END ::
 DELIMITER ;
 
+-- Get task data
+DELIMITER ::
+CREATE PROCEDURE `get_task_data` (IN `tsk_id` INT)
+BEGIN
+    SELECT `tasks`.`name`, `description`, `deadline`, `given_to`.`name` AS `given_to`, `given_by`.`name` AS `given_by` FROM `tasks`
+    JOIN `employees_tasks` ON `tasks`.`id` = `employees_tasks`.`task_id`
+    JOIN `employees` AS `given_to` ON `employees_tasks`.`employee_id` = `given_to`.`id`
+    JOIN `employees` AS `given_by` ON `employees_tasks`.`assigned_by` = `given_by`.`id`
+    WHERE `tasks`.`id` = tsk_id;
+END ::
+DELIMITER ;
+
 -- Change task status
 DELIMITER ::
 CREATE PROCEDURE `change_task_status` (
