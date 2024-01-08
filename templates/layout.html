@@ -29,7 +29,7 @@
                                 <li class="nav-item"><a class="nav-link" href="/admin">Admin</a></li>
                             {% endif %}
                             {% if session['is_manager'] %}
-                            <li class="nav-item"><a class="nav-link" href="/manager_project">Your project</a></li>
+                            <li class="nav-item"><a class="nav-link" href="{{ url_for('project', id = session.get('user').project_id) }}">Your project</a></li>
                             {% endif %}
                             {% if session['user'] %}
                             <li class="nav-item"><a class="nav-link" href="/logout">Log out</a></li>

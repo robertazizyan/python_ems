@@ -1,0 +1,28 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    Modify task
+{% endblock %}
+
+{% block main %}
+    <form action="{{ url_for('change_employee_in_project', id = id, empl_id = empl_id)}}" method = "post">
+        <table>
+            <tr>
+                <th>Employee</th>
+                <th>Role</th>
+            </tr>
+            <tr>
+                <td>
+                    {{ empl_data.name }}
+                </td>
+                <td>
+                    <input type="text" name="role" value ="{{ empl_data.role }}">
+                </td>
+            </tr>
+        </table>
+        <button type="submit">Save changes</button>
+    </form>
+    <form action = "{{url_for('remove_employee_from_project', id = id, empl_id = empl_id)}}" method = "post">
+        <button type="submit">Remove employee from project</button>
+    </form>
+{% endblock %}

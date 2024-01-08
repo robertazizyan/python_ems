@@ -3,6 +3,33 @@
 ---- Work with tasks the same way as the department head, except can only give tasks related to his project
 
 
+-- Get a list of all employees not currently in the project with id and name
+DELIMITER ::
+CREATE PROCEDURE `get_employees`(
+    IN `pr_id` INT
+)
+BEGIN
+    SELECT `employees`.`id`, `employees`.`name` AS `name`, `position`, `departments`.`name` AS `department`, `projects_employees`.`project_id` FROM `employees`
+    JOIN `departments_employees` ON `employees`.`id` = `departments_employees`.`employee_id`
+    JOIN `departments` ON `departments_employees`.`department_id` = `departments`.`id`
+    LEFT JOIN `projects_employees` ON `employees`.`id` = `projects_employees`.`employee_id` 
+    WHERE `projects_employees`.`project_id` != pr_id OR `projects_employees`.`project_id` IS NULL
+    ORDER BY `name`;
+END ::
+DELIMITER ;
+
+-- Get employee name and role in a project
+DELIMITER ::
+CREATE PROCEDURE `get_employee_data`(
+    IN `empl_id` INT
+)
+BEGIN
+    SELECT `name`, `role` FROM `employees`
+    JOIN `projects_employees` ON `employees`.`id` = `projects_employees`.`employee_id`
+    WHERE `employees`.`id` = empl_id;
+END ::
+DELIMITER ;
+
 -- Assign an employee to the project
 DELIMITER ::
 CREATE PROCEDURE `add_employee_to_project` (
@@ -30,8 +57,8 @@ DELIMITER ;
 -- Change an employee role in a project
 DELIMITER ::
 CREATE PROCEDURE `change_employee_role` (
-    IN `empl_id` INT, 
     IN `pr_id` INT,
+    IN `empl_id` INT, 
     IN `new_role` VARCHAR(100)
 )
 BEGIN

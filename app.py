@@ -1,6 +1,6 @@
 import mariadb
 import sys
-from flask import Flask, redirect, render_template, request, session
+from flask import Flask, redirect, render_template, request, session, url_for
 from flask_session import Session
 from helpers import User, Admin, Head, Manager, check_user, login_required, connect, disconnect, convert_dl
 
@@ -46,12 +46,80 @@ def change_task_status(id):
 def project(id):
     user = session.get('user')
     conn, cur = connect(user.username, user.password)
+    pm = False
+    
+    if user.is_manager == 1:
+        pm = True
+    
     project_info = user.get_project_info(id, cur)
     staff = user.get_project_staff(id, cur)
     tasks = user.get_project_tasks(id, cur)
     disconnect(conn, cur)
     
-    return render_template('project.html', project_info = project_info, staff = staff, tasks = tasks)
+    return render_template('project.html', project_info = project_info, staff = staff, tasks = tasks, pm = pm, project_id = id)
+
+
+@app.route('/project_<id>/add_employee_to_project', methods = ['GET', 'POST'])
+@login_required
+def add_employee_to_project(id):
+    user = session.get('user')
+    conn, cur = connect(user.username, user.password)
+    
+    if user.is_manager == 1 and user.project_id == int(id):
+        if request.method == 'POST':
+            user.add_employee_to_project(request.form.get('employee'), request.form.get('role'), cur)
+            conn.commit()
+            
+            disconnect(conn, cur)
+            return redirect(url_for('project', id = id))
+        else:
+            employees = user.get_employees(cur)
+            
+            disconnect(conn, cur)
+            return render_template('add_employee_to_project.html', id = id, employees = employees)
+    else:
+        disconnect(conn, cur)
+        return redirect(url_for('project', id = id))
+
+
+@app.route('/project_<id>/change_employee_in_project_<empl_id>', methods = ['GET', 'POST'])
+@login_required
+def change_employee_in_project(id, empl_id):
+    user = session.get('user')
+    conn, cur = connect(user.username, user.password)
+    
+    if user.is_manager == 1 and user.project_id == int(id):
+        if request.method == 'POST':
+            user.change_employee_role(id, empl_id, request.form.get('role'), cur)
+            conn.commit()
+
+            disconnect(conn, cur)
+            return redirect(url_for('project', id = id))
+        else:
+            empl_data = user.get_employee_data(empl_id, cur)
+            
+            disconnect(conn, cur)
+            return render_template('change_employee_in_project.html', id = id, empl_id = empl_id, empl_data = empl_data)
+    else:
+        disconnect(conn, cur)
+        return redirect(url_for('project', id = id))
+
+
+@app.route('/project_<id>/remove_employee_from_project_<empl_id>', methods = ['POST'])
+@login_required
+def remove_employee_from_project(id, empl_id):
+    user = session.get('user')
+    conn, cur = connect(user.username, user.password)
+    
+    if user.is_manager == 1 and user.project_id == int(id):
+        user.deassign_employee(id, empl_id, cur)
+        conn.commit()
+        
+        disconnect(conn, cur)
+        return redirect(url_for('project', id = id))
+    else:
+        disconnect(conn, cur)
+        return redirect(url_for('project', id = id))
 
 
 @app.route('/department')
@@ -165,10 +233,13 @@ def login():
             conn, cur = connect(empl_data['username'], empl_data['password'])
             if empl_data['is_admin'] == 1:
                 user = Admin(empl_data)
+                session['is_admin'] = True
             elif empl_data['is_head'] == 1:
                 user = Head(empl_data)
+                session['is_head'] = True
             elif empl_data['is_manager'] == 1:
                 user = Manager(empl_data, cur)
+                session['is_manager'] = True
             else:
                 user = User(empl_data)
             

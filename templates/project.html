@@ -1,14 +1,14 @@
 {% extends "layout.html" %}
 
 {% block title %}
-    Project {{project_info.name}}
+    Project {{ project_info.name }}
 {% endblock %}
 
 {% block main %}
-    <p> Project name: {{project_info.name}} </p>
-    <p> Project description: {{project_info.description}} </p>
-    <p> Project start date: {{project_info.start}} </p>
-    <p> Project end date: {{project_info.finish}} </p>
+    <p> Project name: {{ project_info.name }} </p>
+    <p> Project description: {{ project_info.description }} </p>
+    <p> Project start date: {{ project_info.start }} </p>
+    <p> Project end date: {{ project_info.finish }} </p>
 
     <p> Current project staff:
     <table>
@@ -19,12 +19,22 @@
         </tr>
         {% for employee in staff %}
             <tr>
-                <td> {{employee.name}} </td>
-                <td> {{employee.email}} </td>
-                <td> {{employee.role}} </td>
+                <td> 
+                    {% if pm %}
+                      <a href="{{ url_for('change_employee_in_project', id = project_id, empl_id = employee.employee_id)}}">{{employee.name}}</a>  
+                    {% else %}
+                        {{ employee.name }} 
+                    {% endif %}
+                </td>
+                <td> {{ employee.email }} </td>
+                <td> {{ employee.role }} </td>
             </tr>
         {% endfor %}
-    </table>    
+    </table>
+    
+    {% if pm %}
+        <a href="{{ url_for('add_employee_to_project', id = project_id) }}">Add a new employee to the project</a>
+    {% endif %}
 
     <p> Current project tasks: </p>
     <table>
@@ -37,11 +47,11 @@
         </tr>
         {% for task in tasks %}
             <tr>
-                <td> {{task.name}} </td>
-                <td> {{task.description}} </td>
-                <td> {{task.created}} </td>
-                <td> {{task.deadline}} </td>
-                <td> {{task.employee}} </td>
+                <td> {{ task.name }} </td>
+                <td> {{ task.description }} </td>
+                <td> {{ task.created }} </td>
+                <td> {{ task.deadline }} </td>
+                <td> {{ task.employee }} </td>
             </tr>
         {% endfor %}
     </table>    

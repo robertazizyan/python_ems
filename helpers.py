@@ -196,6 +196,20 @@ class Manager(User):
         pr_id = cur.fetchone()[0]
         return pr_id
     
+    def get_employees(self, cur):
+        cur.execute('CALL `get_employees`(?)', (self.project_id, ))
+        results = cur.fetchall()
+        keys = ('id', 'name', 'position', 'department')
+        employees = tuple(dict(zip(keys, result)) for result in results)
+        return employees
+    
+    def get_employee_data(self, empl_id, cur):
+        cur.execute('CALL `get_employee_data`(?)', (empl_id, ))
+        result = cur.fetchone()
+        keys = ('name', 'role')
+        data = dict(zip(keys, result))
+        return data
+    
     def add_task(self, task_name, task_description, task_deadline, employee_id, cur):
         cur.execute('CALL `add_task`(?, ?, ?, ?, ?, ?)', (task_name, task_description, task_deadline, employee_id, self.id, self.project_id))
     
@@ -223,14 +237,14 @@ class Manager(User):
             if new_employee:
                 cur.execute('CALL `reassign_task`(?, ?)', (task_id, new_employee))
 
-    def add_employee_to_project(self, pr_id, empl_id, role, cur):
-        cur.execute('CALL `add_employee_to_project`(?, ?, ?)', (pr_id, empl_id, role))
+    def add_employee_to_project(self, empl_id, role, cur):
+        cur.execute('CALL `add_employee_to_project`(?, ?, ?)', (self.project_id, empl_id, role))
         
     def deassign_employee(self, pr_id, empl_id, cur):
         cur.execute('CALL `deassign_employee`(?, ?)', (pr_id, empl_id))
         
     def change_employee_role(self, pr_id, empl_id, new_role, cur):
-        cur.execute('CALL `change_employee_role`(?, ?)', (pr_id, empl_id, new_role))
+        cur.execute('CALL `change_employee_role`(?, ?, ?)', (pr_id, empl_id, new_role))
 
     
 def check_user(username, password):

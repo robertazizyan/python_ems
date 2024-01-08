@@ -1,0 +1,49 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    Add a new employee to the project
+{% endblock %}
+
+{% block main %}
+    <form action="{{ url_for('add_employee_to_project', id = id)}}" method="post" id="employeeForm">
+        <table>
+            <tr>
+                <th>Employee</th>
+                <th>Position</th>
+                <th>Department</th>
+                <th>Role</th>
+            </tr>
+
+            <tr>
+                <td>
+                    <select name="employee" id="employeeSelect" required onchange="updateEmployeeDetails()">
+                        {% for employee in employees %}
+                            <option value="{{ employee.id }}" data-position="{{ employee.position }}" data-department="{{ employee.department }}">{{ employee.name }}</option>
+                        {% endfor %}
+                    </select>
+                </td>
+                <td id="positionCell"></td>
+                <td id="departmentCell"></td>
+                <td>
+                    <input type="text" name="role" placeholder="Role in the project" required>
+                </td>
+            </tr>
+        </table>
+        <button type="submit">Add employee</button>
+    </form>
+
+    <script>
+        function updateEmployeeDetails() {
+            var select = document.getElementById("employeeSelect");
+            var positionCell = document.getElementById("positionCell");
+            var departmentCell = document.getElementById("departmentCell");
+
+            // Get the selected option
+            var selectedOption = select.options[select.selectedIndex];
+
+            // Update position and department cells
+            positionCell.textContent = selectedOption.getAttribute("data-position") || "Employee position";
+            departmentCell.textContent = selectedOption.getAttribute("data-department") || "Employee department";
+        }
+    </script>
+{% endblock %}
