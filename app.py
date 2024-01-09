@@ -222,6 +222,105 @@ def create_task():
         disconnect(conn, cur)
         return render_template('create_task.html', staff = staff)
 
+
+@app.route('/admin')
+@login_required
+def admin():
+    user = session.get('user')
+    conn, cur = connect(user.username, user.password)
+    
+    disconnect(conn, cur)
+    
+    if user.is_admin == 1:
+        return render_template('admin.html')
+    else:
+        return redirect('/')
+
+
+@app.route('/admin/add_department', methods = ['GET', 'POST'])
+@login_required
+def add_department():
+    user = session.get('user')
+    conn, cur = connect(user.username, user.password)
+    
+    if user.is_admin == 1:
+        if request.method == 'POST':
+            user.add_department(request.form.get('department'), cur)
+            conn.commit()
+            
+            disconnect(conn, cur)
+            return redirect('/admin')
+        else:
+            disconnect(conn, cur)
+            return render_template('add_department.html')
+    else:
+        disconnect(conn, cur)
+        return redirect('/')
+    
+
+@app.route('/admin/add_employee', methods = ['GET', 'POST'])
+@login_required
+def add_employee():
+    user = session.get('user')
+    conn, cur = connect(user.username, user.password)
+    
+    if user.is_admin == 1:
+        if request.method == 'POST':
+            user.add_employee(
+                request.form.get('name'),
+                request.form.get('username'),
+                request.form.get('password'),
+                request.form.get('email'),
+                request.form.get('position'),
+                request.form.get('department_id'),
+                request.form.get('is_head'),
+                request.form.get('is_manager'),
+                request.form.get('is_admin'),
+                cur
+            )
+            conn.commit()
+            
+            disconnect(conn, cur)
+            return redirect('/admin')
+        else:
+            departments = user.get_departments(cur)
+            
+            disconnect(conn, cur)
+            return render_template('add_employee.html', departments = departments)
+    else:
+        disconnect(conn, cur)
+        return redirect('/')
+
+
+@app.route('/admin/add_project', methods = ['GET', 'POST'])
+@login_required
+def add_project():
+    user = session.get('user')
+    conn, cur = connect(user.username, user.password)
+
+    if user.is_admin == 1:    
+        if request.method == 'POST':
+            user.add_project(
+                request.form.get('name'),
+                request.form.get('description'),
+                request.form.get('start'),
+                request.form.get('finish'),
+                request.form.get('pm'),
+                cur
+            )
+            conn.commit()
+            
+            disconnect(conn, cur)
+            return redirect('/admin')
+        else:
+            pms = user.get_project_managers(cur)
+            
+            disconnect(conn, cur)
+            return render_template('add_project.html', pms = pms)
+    else:
+        disconnect(conn, cur)
+        return redirect('/')
+        
             
 @app.route('/login', methods = ['GET', 'POST'])
 def login():

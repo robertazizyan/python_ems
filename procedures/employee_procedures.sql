@@ -104,7 +104,8 @@ BEGIN
         `tasks`.`description` AS `description`, 
         `tasks`.`created` AS `created`, 
         `tasks`.`deadline` AS `deadline`,
-        `employees`.`name` AS `employee`
+        `employees`.`name` AS `employee`,
+        `tasks`.`status` AS `status`
     FROM `tasks`
     JOIN `employees_tasks` ON `tasks`.`id` = `employees_tasks`.`task_id`
     JOIN `employees` ON `employees_tasks`.`employee_id` = `employees`.`id`

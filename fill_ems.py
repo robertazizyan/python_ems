@@ -45,7 +45,7 @@ def main():
     with open('csv_files/projects.csv', mode = 'r') as file:
         reader = csv.DictReader(file, delimiter = ';')
         for line in reader:
-            cur.execute('CALL `add_project`(?, ?, ?, ?)', (line['name'], line['description'], line['start'], line['finish']))       
+            cur.execute('CALL `add_project`(?, ?, ?, ?, ?)', (line['name'], line['description'], line['start'], line['finish'], None))       
     
     # Fill projects_employees relationship table
     with open('csv_files/projects_employees.csv', mode = 'r') as file:
@@ -66,8 +66,7 @@ def main():
                 int(line['assigned']), 
                 project_related
             ))    
-        
-    # Commit all changes to the database    
+          
     print('Database filled successfully')
     conn.close()
 

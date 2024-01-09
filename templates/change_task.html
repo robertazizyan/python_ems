@@ -17,12 +17,12 @@
             
             <tr>
                 <td>
-                    <select name="employee">
+                    <select name="employee" required>
                         {% for employee in staff %}
                             {% if employee.name == task.given_to %}
-                                <option value = {{ employee.employee_id }} selected required>{{ employee.name }}</option>    
+                                <option value = {{ employee.employee_id }} selected>{{ employee.name }}</option>    
                             {% else %}
-                                <option value = {{ employee.employee_id }} required>{{ employee.name }}</option>
+                                <option value = {{ employee.employee_id }}>{{ employee.name }}</option>
                             {% endif %}
                         {% endfor %}
                     </select>

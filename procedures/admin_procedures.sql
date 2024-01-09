@@ -9,6 +9,15 @@ BEGIN
 END ::
 DELIMITER ;
 
+-- Get all departments names and ids
+DELIMITER ::
+CREATE PROCEDURE `get_departments` ()
+BEGIN
+    SELECT * FROM `departments`
+    ORDER BY `name`;
+END ::
+DELIMITER ;
+
 -- Add a new employee an create a user with the specified role based on the is_head,is_manager,is_admin
 DELIMITER ::
 CREATE PROCEDURE `add_employee` (
@@ -110,24 +119,45 @@ BEGIN
         PREPARE stmt FROM @grant_sql;
         EXECUTE stmt;
         DEALLOCATE PREPARE stmt;
-
     END IF;
 
     FLUSH PRIVILEGES;        
-
 END ::
 DELIMITER ;
 
--- Add a new project
+-- Get a list of employees with ids and names who are eligible for a project manager role (and don't currently have any projects)
+DELIMITER ::
+CREATE PROCEDURE `get_project_managers` ()
+BEGIN
+    SELECT `id`, `name` FROM `employees`
+    LEFT JOIN `projects_employees` ON `employees`.`id` = `projects_employees`.`employee_id`
+    WHERE `position` LIKE '%manager' 
+    AND NOT EXISTS (
+        SELECT 1
+        FROM `projects_employees`
+        WHERE `employees`.`id` = `projects_employees`.`employee_id`
+    )
+    ORDER BY `name`;
+END ::
+DELIMITER ;
+
+-- Add a new project and assign its project manager
 DELIMITER ::
 CREATE PROCEDURE `add_project` (
     IN `pr_name` VARCHAR(100),
     IN `pr_desc` TEXT,
     IN `pr_start` DATE,
-    IN `pr_finish` DATE
+    IN `pr_finish` DATE,
+    IN `pm_id` INT
 )
 BEGIN
     INSERT INTO `projects` (`name`, `description`, `start`, `finish`) VALUES (pr_name, pr_desc, IFNULL(pr_start, NULL), IFNULL(pr_finish, NULL));
+
+    IF pm_id IS NOT NULL THEN
+        SET @pr_id := LAST_INSERT_ID();
+        INSERT INTO `projects_employees` (`project_id`, `employee_id`, `role`) VALUES (@pr_id, pm_id, 'Project Manager');
+    END IF;
+
 END ::
 DELIMITER ;
 

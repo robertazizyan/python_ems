@@ -1,0 +1,83 @@
+{% extends "layout.html" %}
+{% block title %}
+    Add employee
+{% endblock %}
+
+{% block main %}
+    <form id="addEmployeeForm" action="/admin/add_employee" method="post">
+        <table>
+            <tr>
+                <th>Employee Name</th>
+                <th>Employee Username</th>
+                <th>Employee Password</th>
+                <th>Employee Email</th>
+                <th>Employee Position</th>
+                <th>Employee Department</th>
+                <th>Employee is a Department head</th>
+                <th>Employee is a Project Manager</th>
+                <th>Employee is an Administrator</th>
+            </tr>
+            <tr>
+                <td>
+                    <input type="text" name="name" placeholder="Employee name" required>
+                </td>
+                <td>
+                    <input type="text" name="username" placeholder="Employee username" required>
+                </td>
+                <td>
+                    <input type="text" name="password" placeholder="Employee password" required>
+                </td>
+                <td>
+                    <input type="text" name="email" placeholder="Employee email" required>
+                </td>
+                <td>
+                    <input type="text" name="position" placeholder="Employee position" required>
+                </td>
+                <td>
+                    <select name="department_id" required>
+                        {% for department in departments %}
+                            <option value={{ department.id }}>{{ department.name }}</option>
+                        {% endfor %}
+                    </select>
+                </td>
+                <td>
+                    <select name="is_head" id="isHead" required>
+                        <option value="0" selected>Is not a department head</option>
+                        <option value="1">Is a department head</option>
+                    </select>
+                </td>
+                <td>
+                    <select name="is_manager" id="isManager" required>
+                        <option value="0" selected>Is not a project manager</option>
+                        <option value="1">Is a project manager</option>
+                    </select>
+                </td>
+                <td>
+                    <select name="is_admin" id="isAdmin" required>
+                        <option value="0" selected>Is not a database admin</option>
+                        <option value="1">Is a database admin</option>
+                    </select>
+                </td>
+            </tr>
+        </table>
+        <button type="submit">Add a new employee</button>
+    </form>
+
+    <script>
+        document.getElementById('addEmployeeForm').addEventListener('submit', function () {
+            var isHead = document.getElementById('isHead').value;
+            var isManager = document.getElementById('isManager').value;
+            var isAdmin = document.getElementById('isAdmin').value;
+    
+            // Check if more than one option is selected
+            if (
+                (isHead == 1 && (isManager == 1 || isAdmin == 1)) ||
+                (isManager == 1 && (isHead == 1 || isAdmin == 1)) ||
+                (isAdmin == 1 && (isHead == 1 || isManager == 1))
+            ) {
+                alert("Please select only one role (department head, project manager, or database admin), or leave all roles unselected.");
+                event.preventDefault(); // Prevent the form submission
+            }
+        });
+    </script>
+{% endblock %}

@@ -1,0 +1,10 @@
+{% extends "layout.html" %}
+{% block title %}
+    Admin
+{% endblock %}
+
+{% block main %}
+    <a href = "{{ url_for('add_department') }}">Add a new department</a>
+    <a href = "{{ url_for('add_employee') }}">Add a new employee</a>
+    <a href = "{{ url_for('add_project') }}">Add a new project</a>
+{% endblock %}

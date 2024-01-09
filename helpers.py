@@ -63,7 +63,7 @@ class User:
     def get_project_tasks(self, project_id, cur):
         cur.execute('CALL `get_project_tasks`(?)', (project_id, )) 
         results = cur.fetchall()
-        keys = ('task_id', 'name', 'description', 'created', 'deadline', 'employee')
+        keys = ('task_id', 'name', 'description', 'created', 'deadline', 'employee', 'status')
         project_tasks = tuple(dict(zip(keys, result)) for result in results)
         return project_tasks
     
@@ -86,35 +86,51 @@ class Admin(User):
         super().__init__(empl_data)
     
     def add_department(self, dep_name, cur):
-        if self.admin == 1 and dep_name:
+        if self.is_admin == 1 and dep_name:
             cur.execute('CALL `add_department`(?)', (dep_name, ))
+    
+    def get_departments(self, cur):
+        if self.is_admin == 1:
+            cur.execute('CALL `get_departments`')
+            results = cur.fetchall()
+            keys = ('id', 'name')
+            departments = tuple(dict(zip(keys, result)) for result in results)
+            return departments
         
     def add_employee(self, empl_name, empl_username, empl_password, empl_email, empl_position, dep_id, empl_is_head, empl_is_manager, empl_is_admin, cur):
-        if self.admin == 1:
+        if self.is_admin == 1:
             cur.execute('CALL `add_employee`(?, ?, ?, ?, ?, ?, ?, ?, ?)', (empl_name, empl_username, empl_password, empl_email, empl_position, dep_id, empl_is_head, empl_is_manager, empl_is_admin))
     
-    def add_project(self, pr_name, pr_description, pr_finish, cur):
-        if self.admin == 1:
-            cur.execute('CALL `add_project`(?, ?, ?)', (pr_name, pr_description, pr_finish))
+    def get_project_managers(self, cur):
+        if self.is_admin == 1:
+            cur.execute('CALL `get_project_managers`')
+            results = cur.fetchall()
+            keys = ('id', 'name')
+            pms = tuple(dict(zip(keys, result)) for result in results)
+            return pms
+    
+    def add_project(self, pr_name, pr_description, pr_start, pr_finish, pm, cur):
+        if self.is_admin == 1:
+            cur.execute('CALL `add_project`(?, ?, ?, ?, ?)', (pr_name, pr_description, pr_start, pr_finish, pm))
 
     def remove_department(self, dep_id, cur):
-        if self.admin == 1 and dep_id:
+        if self.is_admin == 1 and dep_id:
             cur.execute('CALL `remove_department`(?)', (dep_id, ))
     
     def remove_employee(self, empl_id, cur):
-        if self.admin == 1 and empl_id:
+        if self.is_admin == 1 and empl_id:
             cur.execute('CALL `remove_employee`(?)', (empl_id, ))
     
     def remove_project(self, pr_id, cur):
-        if self.admin == 1 and pr_id:
+        if self.is_admin == 1 and pr_id:
             cur.execute('CALL `remove_project`(?)', (pr_id, ))            
 
     def change_department_data(self, dep_id, new_dep_name, cur):
-        if self.admin == 1 and new_dep_name:
+        if self.is_admin == 1 and new_dep_name:
             cur.execute('CALL `change_department_name`(?, ?)', (dep_id, new_dep_name))
     
     def change_employee_data(self, empl_id, new_name, new_username, new_password, new_email, new_position, new_is_head, new_is_manager, new_dep_id, cur):
-        if self.is_admin == 1:
+        if self.is_is_admin == 1:
             if new_name:
                 cur.execute('CALL `change_employee_name`(?, ?)', (empl_id, new_name))
             
