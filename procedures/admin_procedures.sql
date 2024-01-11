@@ -11,10 +11,50 @@ DELIMITER ;
 
 -- Get all departments names and ids
 DELIMITER ::
-CREATE PROCEDURE `get_departments` ()
+CREATE PROCEDURE `admin_get_departments` ()
 BEGIN
     SELECT * FROM `departments`
     ORDER BY `name`;
+END ::
+DELIMITER ;
+
+-- Get all employees data for modification
+DELIMITER ::
+CREATE PROCEDURE `admin_get_employees` ()
+BEGIN
+    SELECT `employees`.`id`, 
+        `employees`.`name`, 
+        `username`, 
+        `password`, 
+        `email`, 
+        `position`,
+        `is_head`,
+        `is_manager`,
+        `is_admin`,
+        `departments_employees`.`department_id` AS `department_id`,
+        `departments`.`name` AS `department_name`
+    FROM `employees`
+    JOIN `departments_employees` ON `employees`.`id` = `departments_employees`.`employee_id`
+    JOIN `departments` ON `departments_employees`.`department_id` = `departments`.`id`
+    ORDER BY `employees`.`name`;
+END ::
+DELIMITER ;
+
+-- Get project data for modification
+DELIMITER ::
+CREATE PROCEDURE `admin_get_projects` ()
+BEGIN
+    SELECT
+        `projects`.`id`,
+        `projects`.`name`,
+        `projects`.`description`,
+        `projects`.`start`,
+        `projects`.`finish`,
+        `employees`.`id` AS `project_manager_id`,
+        `employees`.`name` AS `project_manager_name`
+    FROM `projects`
+    LEFT JOIN `projects_employees` ON `projects`.`id` = `projects_employees`.`project_id` AND `projects_employees`.`role` = 'Project Manager'
+    LEFT JOIN `employees` ON `projects_employees`.`employee_id` = `employees`.`id`;
 END ::
 DELIMITER ;
 
@@ -151,11 +191,20 @@ CREATE PROCEDURE `add_project` (
     IN `pm_id` INT
 )
 BEGIN
+    DECLARE pm_username VARCHAR(100);
+
     INSERT INTO `projects` (`name`, `description`, `start`, `finish`) VALUES (pr_name, pr_desc, IFNULL(pr_start, NULL), IFNULL(pr_finish, NULL));
 
     IF pm_id IS NOT NULL THEN
         SET @pr_id := LAST_INSERT_ID();
         INSERT INTO `projects_employees` (`project_id`, `employee_id`, `role`) VALUES (@pr_id, pm_id, 'Project Manager');
+
+        UPDATE `employees` SET `is_manager` = 1 WHERE `id` = pm_id;
+
+        SELECT `username` INTO pm_username FROM `employees` WHERE `id` = pm_id;
+
+        CALL `grant_options`(pm_username, 0, 1, 0);
+
     END IF;
 
 END ::
@@ -173,7 +222,16 @@ DELIMITER ;
 DELIMITER ::
 CREATE PROCEDURE `remove_employee` (IN `empl_id` INT)
 BEGIN
+    DECLARE empl_username VARCHAR(100);
+
+    SELECT `username` INTO empl_username FROM `employees` WHERE `id` = empl_id;
+
     DELETE FROM `employees` WHERE `id` = empl_id;
+
+    SET @sql := CONCAT('DROP USER ''', empl_username, '''');
+    PREPARE stmt FROM @sql;
+    EXECUTE stmt;
+    DEALLOCATE PREPARE stmt;
 END ::
 DELIMITER ;
 
@@ -269,7 +327,15 @@ CREATE PROCEDURE `change_is_head` (
     IN `head` TINYINT(1)
 )
 BEGIN
+    DECLARE empl_username VARCHAR(100);
+    DECLARE manager TINYINT(1);
+    DECLARE s_admin TINYINT(1);
+    
     UPDATE `employees` SET `is_head` = head WHERE `id` = empl_id;
+
+    SELECT `username` INTO empl_username FROM `employees` WHERE `id` = empl_id;
+    SELECT `is_manager` INTO manager FROM `employees` WHERE `id` = empl_id;
+    SELECT `is_admin` INTO s_admin FROM `employees` WHERE `id` = empl_id;   
 END ::
 DELIMITER ;
 
@@ -280,7 +346,38 @@ CREATE PROCEDURE `change_is_manager` (
     IN `manager` TINYINT(1)
 )
 BEGIN
+    DECLARE empl_username VARCHAR(100);
+    DECLARE head TINYINT(1);
+    DECLARE s_admin TINYINT(1);
+    
     UPDATE `employees` SET `is_manager` = manager WHERE `id` = empl_id;
+
+    SELECT `username` INTO empl_username FROM `employees` WHERE `id` = empl_id;
+    SELECT `is_head` INTO head FROM `employees` WHERE `id` = empl_id;
+    SELECT `is_admin` INTO s_admin FROM `employees` WHERE `id` = empl_id;
+
+    CALL `grant_options`(empl_username, head, manager, s_admin);
+END ::
+DELIMITER ;
+
+-- Change the is_admin state of the employee
+DELIMITER ::
+CREATE PROCEDURE `change_is_admin` (
+    IN `empl_id` INT,
+    IN `s_admin` TINYINT(1)
+)
+BEGIN
+    DECLARE empl_username VARCHAR(100);
+    DECLARE head TINYINT(1);
+    DECLARE manager TINYINT(1);
+    
+    UPDATE `employees` SET `is_admin` = s_admin WHERE `id` = empl_id;
+
+    SELECT `username` INTO empl_username FROM `employees` WHERE `id` = empl_id;
+    SELECT `is_head` INTO head FROM `employees` WHERE `id` = empl_id;
+    SELECT `is_manager` INTO manager FROM `employees` WHERE `id` = empl_id;
+
+    CALL `grant_options`(empl_username, head, manager, s_admin);
 END ::
 DELIMITER ;
 
@@ -306,6 +403,17 @@ BEGIN
 END ::
 DELIMITER ;
 
+-- Change project start
+DELIMITER ::
+CREATE PROCEDURE `change_project_start` (
+    IN `pr_id` INT,
+    IN `pr_start` DATE
+)
+BEGIN
+    UPDATE `projects` SET `start` = pr_start WHERE `id` = pr_id;
+END ::
+DELIMITER ;
+
 -- Change project finish
 DELIMITER ::
 CREATE PROCEDURE `change_project_finish` (
@@ -314,5 +422,16 @@ CREATE PROCEDURE `change_project_finish` (
 )
 BEGIN
     UPDATE `projects` SET `finish` = pr_finish WHERE `id` = pr_id;
+END ::
+DELIMITER ;
+
+--  Change project manager
+DELIMITER ::
+CREATE PROCEDURE `change_project_manager` (
+    IN `pr_id` INT,
+    IN `empl_id` INT
+)
+BEGIN
+    UPDATE `projects_employees` SET `employee_id` = empl_id WHERE `project_id` = pr_id;
 END ::
 DELIMITER ;

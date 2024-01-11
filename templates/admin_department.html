@@ -1,0 +1,23 @@
+{% extends "layout.html" %}
+{% block title %}
+    {{ department.name }}
+{% endblock %}
+
+{% block main %}
+    <form action = "{{ url_for('admin_department', id = id)}}" method = "post">    
+        <table>
+            <tr>
+                <th>Department Name</th>
+            </tr>
+            <tr>
+                <td>
+                    <input type="text" name="name" value ="{{ department.name }}" required>
+                </td>
+            </tr>
+        </table>
+        <button type = "submit">Modify department</button>
+    </form>
+    <form action = "{{ url_for('admin_remove_department', id = id)}}", method = "post">
+        <button type="submit">Delete department</button>
+    </form>
+{% endblock %}

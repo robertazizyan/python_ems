@@ -4,6 +4,7 @@ from flask import Flask, redirect, render_template, request, session, url_for
 from flask_session import Session
 from helpers import User, Admin, Head, Manager, check_user, login_required, connect, disconnect, convert_dl
 
+
 app = Flask(__name__)
 
 app.config["SESSION_PERMANENT"] = False
@@ -177,7 +178,6 @@ def change_task(id):
         task = user.get_task_data(id, cur)
 
         disconnect(conn, cur)
-        
         return render_template('change_task.html', id = id, task = task, staff = staff)
 
 
@@ -229,11 +229,15 @@ def admin():
     user = session.get('user')
     conn, cur = connect(user.username, user.password)
     
-    disconnect(conn, cur)
-    
     if user.is_admin == 1:
-        return render_template('admin.html')
+        departments = user.admin_get_departments(cur)
+        employees = user.admin_get_employees(cur)
+        projects = user.admin_get_projects(cur)
+        
+        disconnect(conn, cur)
+        return render_template('admin.html', departments = departments, employees = employees, projects = projects)
     else:
+        disconnect(conn, cur)
         return redirect('/')
 
 
@@ -251,6 +255,7 @@ def add_department():
             disconnect(conn, cur)
             return redirect('/admin')
         else:
+            
             disconnect(conn, cur)
             return render_template('add_department.html')
     else:
@@ -283,7 +288,7 @@ def add_employee():
             disconnect(conn, cur)
             return redirect('/admin')
         else:
-            departments = user.get_departments(cur)
+            departments = user.admin_get_departments(cur)
             
             disconnect(conn, cur)
             return render_template('add_employee.html', departments = departments)
@@ -317,6 +322,147 @@ def add_project():
             
             disconnect(conn, cur)
             return render_template('add_project.html', pms = pms)
+    else:
+        disconnect(conn, cur)
+        return redirect('/')
+    
+@app.route('/admin/admin_department_<id>', methods = ['GET', 'POST'])
+@login_required
+def admin_department(id):
+    user = session.get('user')
+    conn, cur = connect(user.username, user.password)
+    
+    if user.is_admin == 1:
+        if request.method == 'POST':
+            user.change_department(id, request.form.get('name'), cur)
+            conn.commit()
+            
+            disconnect(conn, cur)
+            return redirect('/admin')
+        else:
+            department = user.admin_get_departments(cur, id)
+
+            disconnect(conn, cur)
+            return render_template('admin_department.html', id = id, department = department)
+    else:
+        disconnect(conn, cur)
+        return redirect('/')
+    
+    
+@app.route('/admin/admin_employee_<id>', methods = ['GET', 'POST'])
+@login_required
+def admin_employee(id):
+    user = session.get('user')
+    conn, cur = connect(user.username, user.password)
+    
+    if user.is_admin == 1:
+        if request.method == 'POST':
+            user.change_employee(
+                cur,
+                id, 
+                request.form.get('name'), 
+                request.form.get('username'),
+                request.form.get('password'),
+                request.form.get('email'),
+                request.form.get('position'),
+                request.form.get('department_id'),
+                request.form.get('is_head'),
+                request.form.get('is_manager'),
+                request.form.get('is_admin')
+            )
+            conn.commit()
+            
+            disconnect(conn, cur)
+            return redirect('/admin')
+        else:
+            employee = user.admin_get_employees(cur, id)
+            departments = user.admin_get_departments(cur)
+            
+            disconnect(conn, cur)
+            return render_template('admin_employee.html', id = id, employee = employee, departments = departments)
+    else:
+        disconnect(conn, cur)
+        return redirect('/')
+    
+    
+@app.route('/admin/admin_project_<id>', methods = ['GET', 'POST'])
+@login_required
+def admin_project(id):
+    user = session.get('user')
+    conn, cur = connect(user.username, user.password)
+    
+    if user.is_admin == 1:
+        if request.method == 'POST':
+            user.change_project(
+                cur,
+                id,
+                request.form.get('name'),
+                request.form.get('description'),
+                request.form.get('start'),
+                request.form.get('finish'),
+                request.form.get('pm')
+            )
+            conn.commit()
+            
+            disconnect(conn, cur)
+            return redirect('/admin')
+        else:
+            project = user.admin_get_projects(cur, id)
+            pms = user.get_project_managers(cur)
+            
+            disconnect(conn, cur)
+            return render_template('admin_project.html', id = id, project = project, pms = pms)
+    else:
+        disconnect(conn, cur)
+        return redirect('/')
+
+
+@app.route('/admin/admin_remove_department_<id>', methods = ['POST'])
+@login_required
+def admin_remove_department(id):
+    user = session.get('user')
+    conn, cur = connect(user.username, user.password)
+    
+    if user.is_admin == 1:
+        user.remove_department(id, cur)
+        conn.commit()
+        
+        disconnect(conn, cur)
+        return redirect('/admin')
+    else:
+        disconnect(conn, cur)
+        return redirect('/')
+    
+
+@app.route('/admin/admin_remove_employee_<id>', methods = ['POST'])
+@login_required
+def admin_remove_employee(id):
+    user = session.get('user')
+    conn, cur = connect(user.username, user.password)
+    
+    if user.is_admin == 1:
+        user.remove_employee(id, cur)
+        conn.commit()
+        
+        disconnect(conn, cur)
+        return redirect('/admin')
+    else:
+        disconnect(conn, cur)
+        return redirect('/')
+    
+
+@app.route('/admin/admin_remove_project_<id>', methods = ['POST'])
+@login_required
+def admin_remove_project(id):
+    user = session.get('user')
+    conn, cur = connect(user.username, user.password)
+    
+    if user.is_admin == 1:
+        user.remove_project(id, cur)
+        conn.commit()
+        
+        disconnect(conn, cur)
+        return redirect('/admin')
     else:
         disconnect(conn, cur)
         return redirect('/')

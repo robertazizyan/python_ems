@@ -89,13 +89,48 @@ class Admin(User):
         if self.is_admin == 1 and dep_name:
             cur.execute('CALL `add_department`(?)', (dep_name, ))
     
-    def get_departments(self, cur):
+    def admin_get_departments(self, cur, choice = None):
         if self.is_admin == 1:
-            cur.execute('CALL `get_departments`')
+            dep = None
+            cur.execute('CALL `admin_get_departments`')
             results = cur.fetchall()
             keys = ('id', 'name')
             departments = tuple(dict(zip(keys, result)) for result in results)
-            return departments
+
+            if choice:
+                for department in departments:
+                    if int(department['id']) == int(choice):
+                        return department
+            else:
+                return departments
+    
+    def admin_get_employees(self, cur, choice = None):
+        if self.is_admin == 1:
+            cur.execute('CALL `admin_get_employees`')
+            results = cur.fetchall()
+            keys = ('id', 'name', 'username', 'password', 'email', 'position', 'is_head', 'is_manager', 'is_admin', 'department_id', 'department_name')
+            employees = tuple(dict(zip(keys, result)) for result in results)
+            
+            if choice:
+                for employee in employees:
+                    if int(employee['id']) == int(choice):
+                        return employee
+            else:
+                return employees
+        
+    def admin_get_projects(self, cur, choice = None):
+        if self.is_admin == 1:
+            cur.execute('CALL `admin_get_projects`')
+            results = cur.fetchall()
+            keys = ('id', 'name', 'description', 'start', 'finish', 'pm_id', 'pm_name')
+            projects = tuple(dict(zip(keys, result)) for result in results)
+
+            if choice:
+                for project in projects:
+                    if int(project['id']) == int(choice):
+                        return project
+            else:
+                return projects
         
     def add_employee(self, empl_name, empl_username, empl_password, empl_email, empl_position, dep_id, empl_is_head, empl_is_manager, empl_is_admin, cur):
         if self.is_admin == 1:
@@ -125,12 +160,25 @@ class Admin(User):
         if self.is_admin == 1 and pr_id:
             cur.execute('CALL `remove_project`(?)', (pr_id, ))            
 
-    def change_department_data(self, dep_id, new_dep_name, cur):
+    def change_department(self, dep_id, new_dep_name, cur):
         if self.is_admin == 1 and new_dep_name:
-            cur.execute('CALL `change_department_name`(?, ?)', (dep_id, new_dep_name))
+            cur.execute('CALL `change_department`(?, ?)', (dep_id, new_dep_name))
     
-    def change_employee_data(self, empl_id, new_name, new_username, new_password, new_email, new_position, new_is_head, new_is_manager, new_dep_id, cur):
-        if self.is_is_admin == 1:
+    def change_employee(
+        self, 
+        cur, 
+        empl_id = None, 
+        new_name = None, 
+        new_username = None, 
+        new_password = None, 
+        new_email = None, 
+        new_position = None,
+        new_dep_id = None,
+        new_is_head = None, 
+        new_is_manager = None, 
+        new_is_admin = None
+    ):
+        if self.is_admin == 1:
             if new_name:
                 cur.execute('CALL `change_employee_name`(?, ?)', (empl_id, new_name))
             
@@ -145,26 +193,44 @@ class Admin(User):
                 
             if new_position:
                 cur.execute('CALL `change_employee_position`(?, ?)', (empl_id, new_position))
+
+            if new_dep_id:
+                cur.execute('CALL `change_employee_department`(?, ?)', (empl_id, new_dep_id))
                 
             if new_is_head:
                 cur.execute('CALL `change_is_head`(?, ?)', (empl_id, new_is_head))
             
             if new_is_manager:
                 cur.execute('CALL `change_is_manager`(?, ?)', (empl_id, new_is_manager))
-            
-            if new_dep_id:
-                cur.execute('CALL `change_employee_department`(?, ?)', (empl_id, new_dep_id))
+                
+            if new_is_admin:
+                cur.execute('CALL `change_is_admin`(?, ?)', (empl_id, new_is_admin))
     
-    def change_project_data(self, pr_id, new_pr_name, new_pr_description, new_pr_finish, cur):
+    def change_project(
+        self, 
+        cur, 
+        pr_id = None, 
+        new_pr_name = None, 
+        new_pr_description = None, 
+        new_pr_start = None, 
+        new_pr_finish = None, 
+        new_pm = None
+    ):
         if self.is_admin == 1:
             if new_pr_name:
                 cur.execute('CALL `change_project_name`(?, ?)', (pr_id, new_pr_name))
             
             if new_pr_description:
                 cur.execute('CALL `change_project_description`(?, ?)', (pr_id, new_pr_description))
+            
+            if new_pr_start:
+                cur.execute('CALL `change_project_start`(?, ?)', (pr_id, new_pr_start))
                 
             if new_pr_finish:
-                cur.execute('CALL `change_project_finish`(?, ?)', (pr_id, new_pr_finish))            
+                cur.execute('CALL `change_project_finish`(?, ?)', (pr_id, new_pr_finish))
+            
+            if new_pm:
+                cur.execute('CALL `change_project_manager`(?, ?)', (pr_id, new_pm))            
         
 
 # A subclass of User that has the ability to assign/reassign/deassign tasks to the employees of his department unrelated to projects            
