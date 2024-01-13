@@ -111,7 +111,8 @@ BEGIN
 END ::
 DELIMITER ;
 
--- Grant rights to an employee based on his type
+
+-- Give certain rights on the database to an employee, bases on his statuses
 DELIMITER ::
 CREATE PROCEDURE `grant_options` (
     IN empl_username VARCHAR(100),
@@ -120,7 +121,7 @@ CREATE PROCEDURE `grant_options` (
     IN is_admin TINYINT(1)    
 )
 BEGIN
-    SET @grant_sql = CONCAT('GRANT SELECT, EXECUTE ON `ems`.* TO ''', empl_username, '''@''%''');
+    SET @grant_sql := CONCAT('GRANT employee TO ''', empl_username, '''@''%''');
     PREPARE stmt FROM @grant_sql;
     EXECUTE stmt;
     DEALLOCATE PREPARE stmt;
@@ -128,42 +129,60 @@ BEGIN
     FLUSH PRIVILEGES;
 
     IF is_head = 1 THEN
-        SET @grant_sql = CONCAT('GRANT CREATE, UPDATE, DELETE ON `ems`.`tasks` TO ''', empl_username, '''@''%''');
-        PREPARE stmt FROM @grant_sql;
-        EXECUTE stmt;
-        DEALLOCATE PREPARE stmt;
-
-        SET @grant_sql = CONCAT('GRANT CREATE, UPDATE, DELETE ON `ems`.`employees_tasks` TO ''', empl_username, '''@''%''');
-        PREPARE stmt FROM @grant_sql;
-        EXECUTE stmt;
-        DEALLOCATE PREPARE stmt;
-
+        SET @grant_sql := CONCAT('GRANT department_head TO ''', empl_username, '''@''%''');
     ELSEIF is_manager = 1 THEN
-        SET @grant_sql = CONCAT('GRANT CREATE, UPDATE, DELETE ON `ems`.`tasks` TO ''', empl_username, '''@''%''');
+        SET @grant_sql := CONCAT('GRANT project_manager TO ''', empl_username, '''@''%''');
+    ELSEIF is_admin = 1 THEN
+        SET @grant_sql := CONCAT('GRANT admin TO ''', empl_username, '''@''%''');
+    END IF;
+
+    PREPARE stmt FROM @grant_sql;
+    EXECUTE stmt;
+    DEALLOCATE PREPARE stmt;
+
+    FLUSH PRIVILEGES;
+
+    IF is_head = 1 THEN
+        SET @grant_sql := CONCAT('GRANT ALL PRIVILEGES ON `ems`.`tasks` TO ''', empl_username, '''@''%''');
         PREPARE stmt FROM @grant_sql;
         EXECUTE stmt;
         DEALLOCATE PREPARE stmt;
 
-        SET @grant_sql = CONCAT('GRANT CREATE, UPDATE, DELETE ON `ems`.`employees_tasks` TO ''', empl_username, '''@''%''');
+        SET @grant_sql := CONCAT('GRANT ALL PRIVILEGES ON `ems`.`employees_tasks` TO ''', empl_username, '''@''%''');
         PREPARE stmt FROM @grant_sql;
         EXECUTE stmt;
         DEALLOCATE PREPARE stmt;
         
-        SET @grant_sql = CONCAT('GRANT CREATE, UPDATE, DELETE ON `ems`.`projects_employees` TO ''', empl_username, '''@''%''');
+    ELSEIF is_manager = 1 THEN
+        SET @grant_sql := CONCAT('GRANT ALL PRIVILEGES ON `ems`.`tasks` TO ''', empl_username, '''@''%''');
+        PREPARE stmt FROM @grant_sql;
+        EXECUTE stmt;
+        DEALLOCATE PREPARE stmt;
+
+        SET @grant_sql := CONCAT('GRANT ALL PRIVILEGES ON `ems`.`employees_tasks` TO ''', empl_username, '''@''%''');
+        PREPARE stmt FROM @grant_sql;
+        EXECUTE stmt;
+        DEALLOCATE PREPARE stmt;
+
+        SET @grant_sql := CONCAT('GRANT ALL PRIVILEGES ON `ems`.`projects_employees` TO ''', empl_username, '''@''%''');
         PREPARE stmt FROM @grant_sql;
         EXECUTE stmt;
         DEALLOCATE PREPARE stmt;
 
     ELSEIF is_admin = 1 THEN
-        SET @grant_sql = CONCAT('GRANT ALL PRIVILEGES ON `ems`.* TO ''', empl_username, '''@''%'' WITH GRANT OPTION');
+        SET @grant_sql := CONCAT('GRANT ALL PRIVILEGES ON `ems`.* TO ''', empl_username, '''@''%'' WITH GRANT OPTION');
         PREPARE stmt FROM @grant_sql;
         EXECUTE stmt;
         DEALLOCATE PREPARE stmt;
     END IF;
 
-    FLUSH PRIVILEGES;        
+
+    FLUSH PRIVILEGES;
+
 END ::
 DELIMITER ;
+
+
 
 -- Get a list of employees with ids and names who are eligible for a project manager role (and don't currently have any projects)
 DELIMITER ::

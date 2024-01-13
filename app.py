@@ -471,7 +471,7 @@ def admin_remove_project(id):
 @app.route('/login', methods = ['GET', 'POST'])
 def login():
     session.clear()
-    
+
     if request.method == 'POST':
         empl_data = check_user(request.form.get('username'), request.form.get('password'))
         if empl_data:

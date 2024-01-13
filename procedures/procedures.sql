@@ -19,3 +19,27 @@ BEGIN
     END IF;
 END ::
 DELIMITER ;
+
+-- Get employee statuses for a role assigning in a session
+DELIMITER ::
+CREATE PROCEDURE `set_role` (
+    IN `empl_username` VARCHAR(100),
+    IN `empl_password` VARCHAR(300)
+)
+BEGIN
+    DECLARE s_head TINYINT(1);
+    DECLARE s_manager TINYINT(1);
+    DECLARE s_admin TINYINT(1);
+
+    SELECT `is_head` INTO s_head FROM `employees`
+    WHERE `username` = empl_username and `password` = empl_password;
+
+    SELECT `is_manager` INTO s_manager FROM `employees`
+    WHERE `username` = empl_username and `password` = empl_password;
+
+    SELECT `is_admin` INTO s_admin FROM `employees`
+    WHERE `username` = empl_username and `password` = empl_password;
+
+    SELECT s_head, s_manager, s_admin;
+END ::
+DELIMITER ;

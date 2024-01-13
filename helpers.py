@@ -334,8 +334,7 @@ def check_user(username, password):
     try:
         conn = mariadb.connect(
             user = username,
-            password = password,
-            database = 'ems'
+            password = password
         )
         print('successfully connected to db')
     except mariadb.Error as e:
@@ -343,6 +342,8 @@ def check_user(username, password):
         return
 
     cur = conn.cursor()
+    cur.execute('SET ROLE employee')
+    cur.execute('USE ems')
     cur.execute('CALL `check_employee`(?, ?)', (username, password))
     result = cur.fetchone()
     
@@ -368,10 +369,19 @@ def login_required(f):
 def connect(username, password):
     conn = mariadb.connect(
         username = username,
-        password = password,
-        database = 'ems'
+        password = password
     )
     cur = conn.cursor()
+    cur.execute('SET ROLE employee')
+    cur.execute('USE ems')
+    cur.execute('CALL `set_role`(?, ?)', (username, password))
+    statuses = cur.fetchone()
+    if statuses[0] == 1:
+        cur.execute('SET ROLE department_head')
+    elif statuses[1] == 1:
+        cur.execute('SET ROLE project_manager')
+    elif statuses[2] == 1:
+        cur.execute('SET ROLE admin')
     return conn, cur
 
 
