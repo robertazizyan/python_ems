@@ -22,6 +22,8 @@ GRANT EXECUTE ON PROCEDURE `ems`.`get_tasks_assigned_by` TO department_head;
 GRANT EXECUTE ON PROCEDURE `ems`.`change_task_name` TO department_head;
 GRANT EXECUTE ON PROCEDURE `ems`.`change_task_description` TO department_head;
 GRANT EXECUTE ON PROCEDURE `ems`.`change_task_deadline` TO department_head;
+GRANT SELECT, INSERT, UPDATE, DELETE ON `ems`.`tasks` TO department_head;
+GRANT SELECT, INSERT, UPDATE, DELETE ON `ems`.`employees_tasks` TO department_head;
 
 FLUSH PRIVILEGES;
 
@@ -40,6 +42,9 @@ GRANT EXECUTE ON PROCEDURE `ems`.`add_employee_to_project` TO project_manager;
 GRANT EXECUTE ON PROCEDURE `ems`.`deassign_employee` TO project_manager;
 GRANT EXECUTE ON PROCEDURE `ems`.`change_employee_role` TO project_manager;
 GRANT EXECUTE ON PROCEDURE `ems`.`get_my_project_id` TO project_manager;
+GRANT SELECT, INSERT, UPDATE, DELETE ON `ems`.`tasks` TO project_manager;
+GRANT SELECT, INSERT, UPDATE, DELETE ON `ems`.`employees_tasks` TO project_manager;
+GRANT SELECT, INSERT, UPDATE, DELETE ON `ems`.`projects_employees` TO project_manager;
 
 FLUSH PRIVILEGES;
 

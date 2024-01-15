@@ -142,43 +142,6 @@ BEGIN
 
     FLUSH PRIVILEGES;
 
-    IF is_head = 1 THEN
-        SET @grant_sql := CONCAT('GRANT ALL PRIVILEGES ON `ems`.`tasks` TO ''', empl_username, '''@''%''');
-        PREPARE stmt FROM @grant_sql;
-        EXECUTE stmt;
-        DEALLOCATE PREPARE stmt;
-
-        SET @grant_sql := CONCAT('GRANT ALL PRIVILEGES ON `ems`.`employees_tasks` TO ''', empl_username, '''@''%''');
-        PREPARE stmt FROM @grant_sql;
-        EXECUTE stmt;
-        DEALLOCATE PREPARE stmt;
-        
-    ELSEIF is_manager = 1 THEN
-        SET @grant_sql := CONCAT('GRANT ALL PRIVILEGES ON `ems`.`tasks` TO ''', empl_username, '''@''%''');
-        PREPARE stmt FROM @grant_sql;
-        EXECUTE stmt;
-        DEALLOCATE PREPARE stmt;
-
-        SET @grant_sql := CONCAT('GRANT ALL PRIVILEGES ON `ems`.`employees_tasks` TO ''', empl_username, '''@''%''');
-        PREPARE stmt FROM @grant_sql;
-        EXECUTE stmt;
-        DEALLOCATE PREPARE stmt;
-
-        SET @grant_sql := CONCAT('GRANT ALL PRIVILEGES ON `ems`.`projects_employees` TO ''', empl_username, '''@''%''');
-        PREPARE stmt FROM @grant_sql;
-        EXECUTE stmt;
-        DEALLOCATE PREPARE stmt;
-
-    ELSEIF is_admin = 1 THEN
-        SET @grant_sql := CONCAT('GRANT ALL PRIVILEGES ON `ems`.* TO ''', empl_username, '''@''%'' WITH GRANT OPTION');
-        PREPARE stmt FROM @grant_sql;
-        EXECUTE stmt;
-        DEALLOCATE PREPARE stmt;
-    END IF;
-
-
-    FLUSH PRIVILEGES;
-
 END ::
 DELIMITER ;
 
@@ -347,14 +310,26 @@ CREATE PROCEDURE `change_is_head` (
 )
 BEGIN
     DECLARE empl_username VARCHAR(100);
-    DECLARE manager TINYINT(1);
+    DECLARE s_head TINYINT(1);
+    DECLARE s_manager TINYINT(1);
     DECLARE s_admin TINYINT(1);
-    
-    UPDATE `employees` SET `is_head` = head WHERE `id` = empl_id;
 
     SELECT `username` INTO empl_username FROM `employees` WHERE `id` = empl_id;
-    SELECT `is_manager` INTO manager FROM `employees` WHERE `id` = empl_id;
-    SELECT `is_admin` INTO s_admin FROM `employees` WHERE `id` = empl_id;   
+    SELECT `is_head` INTO s_head FROM `employees` WHERE `id` = empl_id;
+    SELECT `is_manager` INTO s_manager FROM `employees` WHERE `id` = empl_id;
+    SELECT `is_admin` INTO s_admin FROM `employees` WHERE `id` = empl_id;
+
+    IF s_head = 1 AND head = 0 THEN
+        SET @revoke_sql := CONCAT('REVOKE department_head FROM ''', empl_username, '''@''%''');
+        PREPARE stmt FROM @revoke_sql;
+        EXECUTE stmt;
+        DEALLOCATE PREPARE stmt;
+    ELSEIF s_head = 0 AND head = 1 THEN
+        CALL `grant_options`(empl_username, head, s_manager, s_admin);  
+    END IF;     
+    
+    UPDATE `employees` SET `is_head` = head WHERE `id` = empl_id;
+  
 END ::
 DELIMITER ;
 
@@ -366,16 +341,26 @@ CREATE PROCEDURE `change_is_manager` (
 )
 BEGIN
     DECLARE empl_username VARCHAR(100);
-    DECLARE head TINYINT(1);
+    DECLARE s_head TINYINT(1);
+    DECLARE s_manager TINYINT(1);
     DECLARE s_admin TINYINT(1);
+
+    SELECT `username` INTO empl_username FROM `employees` WHERE `id` = empl_id;
+    SELECT `is_head` INTO s_head FROM `employees` WHERE `id` = empl_id;
+    SELECT `is_manager` INTO s_manager FROM `employees` WHERE `id` = empl_id;
+    SELECT `is_admin` INTO s_admin FROM `employees` WHERE `id` = empl_id;
+
+    IF s_manager = 1 AND manager = 0 THEN
+        SET @revoke_sql := CONCAT('REVOKE project_manager FROM ''', empl_username, '''@''%''');
+        PREPARE stmt FROM @revoke_sql;
+        EXECUTE stmt;
+        DEALLOCATE PREPARE stmt;
+    ELSEIF s_manager = 0 AND manager = 1 THEN
+        CALL `grant_options`(empl_username, s_head, manager, s_admin);  
+    END IF;     
     
     UPDATE `employees` SET `is_manager` = manager WHERE `id` = empl_id;
 
-    SELECT `username` INTO empl_username FROM `employees` WHERE `id` = empl_id;
-    SELECT `is_head` INTO head FROM `employees` WHERE `id` = empl_id;
-    SELECT `is_admin` INTO s_admin FROM `employees` WHERE `id` = empl_id;
-
-    CALL `grant_options`(empl_username, head, manager, s_admin);
 END ::
 DELIMITER ;
 
@@ -383,20 +368,30 @@ DELIMITER ;
 DELIMITER ::
 CREATE PROCEDURE `change_is_admin` (
     IN `empl_id` INT,
-    IN `s_admin` TINYINT(1)
+    IN `admin` TINYINT(1)
 )
 BEGIN
     DECLARE empl_username VARCHAR(100);
-    DECLARE head TINYINT(1);
-    DECLARE manager TINYINT(1);
-    
-    UPDATE `employees` SET `is_admin` = s_admin WHERE `id` = empl_id;
+    DECLARE s_head TINYINT(1);
+    DECLARE s_manager TINYINT(1);
+    DECLARE s_admin TINYINT(1);
 
     SELECT `username` INTO empl_username FROM `employees` WHERE `id` = empl_id;
-    SELECT `is_head` INTO head FROM `employees` WHERE `id` = empl_id;
-    SELECT `is_manager` INTO manager FROM `employees` WHERE `id` = empl_id;
+    SELECT `is_head` INTO s_head FROM `employees` WHERE `id` = empl_id;
+    SELECT `is_manager` INTO s_manager FROM `employees` WHERE `id` = empl_id;
+    SELECT `is_admin` INTO s_admin FROM `employees` WHERE `id` = empl_id;
 
-    CALL `grant_options`(empl_username, head, manager, s_admin);
+    IF s_admin = 1 AND admin = 0 THEN
+        SET @revoke_sql := CONCAT('REVOKE admin FROM ''', empl_username, '''@''%''');
+        PREPARE stmt FROM @revoke_sql;
+        EXECUTE stmt;
+        DEALLOCATE PREPARE stmt;
+    ELSEIF s_admin = 0 AND admin = 1 THEN
+        CALL `grant_options`(empl_username, s_head, s_manager, admin);  
+    END IF;     
+    
+    UPDATE `employees` SET `is_admin` = admin WHERE `id` = empl_id;
+
 END ::
 DELIMITER ;
 
