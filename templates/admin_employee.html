@@ -4,85 +4,94 @@
 {% endblock %}
 
 {% block main %}
+    <nav style="--bs-breadcrumb-divider: '/';" aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="/">Home</a></li>
+            <li class="breadcrumb-item"><a href="/admin">Admin</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Modify an Employee</li>
+        </ol>
+    </nav>
     <form id="ModifyEmployeeForm" action="{{ url_for('admin_employee', id = id)}}" method="post">
-        <table>
-            <tr>
-                <th>Employee Name</th>
-                <th>Employee Username</th>
-                <th>Employee Password</th>
-                <th>Employee Email</th>
-                <th>Employee Position</th>
-                <th>Employee Department</th>
-                <th>Employee is a Department head</th>
-                <th>Employee is a Project Manager</th>
-                <th>Employee is an Administrator</th>
-            </tr>
-            <tr>
-                <td>
-                    <input type="text" name="name" value = "{{ employee.name }}" required>
-                </td>
-                <td>
-                    <input type="text" name="username" value = "{{ employee.username }}" required>
-                </td>
-                <td>
-                    <input type="text" name="password" value = "{{ employee.password }}" required>
-                </td>
-                <td>
-                    <input type="text" name="email" value = "{{ employee.email }}" required>
-                </td>
-                <td>
-                    <input type="text" name="position" value = "{{ employee.position }}" required>
-                </td>
-                <td>
-                    <select name="department_id" required>
-                        {% for department in departments %}
-                            {% if employee.department_id == department.id %}
-                                <option value={{ department.id }} selected>{{ department.name }}</option>    
+        <div class="table">
+            <table>
+                <tr>
+                    <th>Employee Name</th>
+                    <th>Employee Username</th>
+                    <th>Employee Password</th>
+                    <th>Employee Email</th>
+                    <th>Employee Position</th>
+                    <th>Employee Department</th>
+                    <th>Employee is a Department head</th>
+                    <th>Employee is a Project Manager</th>
+                    <th>Employee is an Administrator</th>
+                </tr>
+                <tr>
+                    <td>
+                        <input type="text" name="name" value = "{{ employee.name }}" required>
+                    </td>
+                    <td>
+                        <input type="text" name="username" value = "{{ employee.username }}" required>
+                    </td>
+                    <td>
+                        <input type="text" name="password" value = "{{ employee.password }}" required>
+                    </td>
+                    <td>
+                        <input type="text" name="email" value = "{{ employee.email }}" required>
+                    </td>
+                    <td>
+                        <input type="text" name="position" value = "{{ employee.position }}" required>
+                    </td>
+                    <td>
+                        <select name="department_id" required>
+                            {% for department in departments %}
+                                {% if employee.department_id == department.id %}
+                                    <option value={{ department.id }} selected>{{ department.name }}</option>    
+                                {% else %}
+                                    <option value={{ department.id }}>{{ department.name }}</option>
+                                {% endif %}
+                            {% endfor %}
+                        </select>
+                    </td>
+                    <td>
+                        <select name="is_head" id="isHead" required>
+                            {% if employee.is_head == 0 %}
+                                <option value = 0 selected>Is not a department head</option>
+                                <option value = 1>Is a department head</option>
                             {% else %}
-                                <option value={{ department.id }}>{{ department.name }}</option>
+                                <option value = 0> Is not a department head</option>
+                                <option value = 1 selected>Is a department head</option>
                             {% endif %}
-                        {% endfor %}
-                    </select>
-                </td>
-                <td>
-                    <select name="is_head" id="isHead" required>
-                        {% if employee.is_head == 0 %}
-                            <option value = 0 selected>Is not a department head</option>
-                            <option value = 1>Is a department head</option>
-                        {% else %}
-                            <option value = 0> Is not a department head</option>
-                            <option value = 1 selected>Is a department head</option>
-                        {% endif %}
-                    </select>
-                </td>
-                <td>
-                    <select name="is_manager" id="isManager" required>
-                        {% if employee.is_manager == 0 %}
-                            <option value = 0 selected>Is not a project manager</option>
-                            <option value = 1>Is a project manager</option>
-                        {% else %}
-                            <option value = 0>Is not a project manager</option>
-                            <option value = 1 selected>Is a project manager</option>
-                        {% endif %}
-                    </select>
-                </td>
-                <td>
-                    <select name="is_admin" id="isAdmin" required>
-                        {% if employee.is_admin == 0 %}
-                            <option value = 0 selected>Is not a database admin</option>
-                            <option value = 1>Is a database admin</option>
-                        {% else %}
-                            <option value = 0>Is not a database admin</option>
-                            <option value = 1 selected>Is a database admin</option>
-                        {% endif %}
-                    </select>
-                </td>
-            </tr>
-        </table>
-        <button type="submit">Modify Employee</button>
+                        </select>
+                    </td>
+                    <td>
+                        <select name="is_manager" id="isManager" required>
+                            {% if employee.is_manager == 0 %}
+                                <option value = 0 selected>Is not a project manager</option>
+                                <option value = 1>Is a project manager</option>
+                            {% else %}
+                                <option value = 0>Is not a project manager</option>
+                                <option value = 1 selected>Is a project manager</option>
+                            {% endif %}
+                        </select>
+                    </td>
+                    <td>
+                        <select name="is_admin" id="isAdmin" required>
+                            {% if employee.is_admin == 0 %}
+                                <option value = 0 selected>Is not a database admin</option>
+                                <option value = 1>Is a database admin</option>
+                            {% else %}
+                                <option value = 0>Is not a database admin</option>
+                                <option value = 1 selected>Is a database admin</option>
+                            {% endif %}
+                        </select>
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <button type="submit" class="submit">Modify Employee</button>
     </form>
     <form action = "{{ url_for('admin_remove_employee', id = id)}}" method = "post">
-        <button type="submit">Delete employee</button>
+        <button type="submit" class="submit">Delete employee</button>
     </form>
 
     <script>

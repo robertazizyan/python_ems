@@ -5,45 +5,54 @@
 {% endblock %}
 
 {% block main %}
+    <nav style="--bs-breadcrumb-divider: '/';" aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="/">Home</a></li>
+            <li class="breadcrumb-item"><a href="/tasks">Tasks</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Modify a task</li>
+        </ol>
+    </nav>
     <form action="{{ url_for('change_task', id = id)}}" method = "post">
-        <table>
-            <tr>
-                <th>Employee</th>
-                <th>Task name</th>
-                <th>Task description</th>
-                <th>Deadline Date</th>
-                <th>Deadline Time</th>
-            </tr>
-            
-            <tr>
-                <td>
-                    <select name="employee" required>
-                        {% for employee in staff %}
-                            {% if employee.name == task.given_to %}
-                                <option value = {{ employee.employee_id }} selected>{{ employee.name }}</option>    
-                            {% else %}
-                                <option value = {{ employee.employee_id }}>{{ employee.name }}</option>
-                            {% endif %}
-                        {% endfor %}
-                    </select>
-                </td>
-                <td>
-                    <input type="text" name="task_name" value ="{{ task.name }}">
-                </td>
-                <td>
-                    <textarea name="task_description" required>{{ task.description }}</textarea>
-                </td>
-                <td>
-                    <input type="date" name="deadline_date" value = {{ task.deadline[0] }} required>
-                </td>
-                <td>
-                    <input type ="time" name="deadline_time" value = {{ task.deadline[1] }} required>
-                </td>
-            </tr>
-        </table>
-        <button type="submit">Modify task</button>
+        <div class="table">
+            <table>
+                <tr>
+                    <th>Employee</th>
+                    <th>Task name</th>
+                    <th>Task description</th>
+                    <th>Deadline Date</th>
+                    <th>Deadline Time</th>
+                </tr>
+                
+                <tr>
+                    <td>
+                        <select name="employee" required>
+                            {% for employee in staff %}
+                                {% if employee.name == task.given_to %}
+                                    <option value = {{ employee.employee_id }} selected>{{ employee.name }}</option>    
+                                {% else %}
+                                    <option value = {{ employee.employee_id }}>{{ employee.name }}</option>
+                                {% endif %}
+                            {% endfor %}
+                        </select>
+                    </td>
+                    <td>
+                        <input type="text" name="task_name" value ="{{ task.name }}">
+                    </td>
+                    <td>
+                        <textarea name="task_description" required>{{ task.description }}</textarea>
+                    </td>
+                    <td>
+                        <input type="date" name="deadline_date" value = {{ task.deadline[0] }} required>
+                    </td>
+                    <td>
+                        <input type ="time" name="deadline_time" value = {{ task.deadline[1] }} required>
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <button type="submit" class="submit">Modify task</button>
     </form>
     <form action = "{{url_for('remove_task', id = id)}}" method = "post">
-        <button type="submit">Delete task</button>
+        <button type="submit" class="submit">Delete task</button>
     </form>
 {% endblock %}

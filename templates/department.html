@@ -4,18 +4,26 @@
 {% endblock %}
 
 {% block main %}
-    <table>
-        <tr>
-            <th>Employee</th>
-            <th>Email</th>
-            <th>Position</th>
-        </tr>
-        {% for employee in staff %}
+    <nav style="--bs-breadcrumb-divider: '/';" aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="/">Home</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Department</li>
+        </ol>
+    </nav>
+    <div class="table">
+        <table>
             <tr>
-                <td> {{employee.name}} </td>
-                <td> {{employee.email}} </td>
-                <td> {{employee.position}} </td>
+                <th>Employee</th>
+                <th>Email</th>
+                <th>Position</th>
             </tr>
-        {% endfor %}
-    </table> 
+            {% for employee in staff %}
+                <tr>
+                    <td> {{employee.name}} </td>
+                    <td> {{employee.email}} </td>
+                    <td> {{employee.position}} </td>
+                </tr>
+            {% endfor %}
+        </table> 
+    </div>
 {% endblock %}

@@ -7,6 +7,7 @@ from datetime import datetime, time
 
 
 class User:
+    # Init an object and assign primary parameters for further reference
     def __init__(self, empl_data):
 
         self.id = empl_data['id']
@@ -45,6 +46,7 @@ class User:
         staff = tuple(dict(zip(keys, result)) for result in results)
         return staff
 
+    # Get the project info from the db as a tuple of dictionaries
     def get_project_info(self, project_id, cur):
         cur.execute('CALL `get_project_info`(?)', (project_id, ))
         results = cur.fetchone()
@@ -60,6 +62,7 @@ class User:
         staff = tuple(dict(zip(keys, result)) for result in results)
         return staff
     
+    # Get a tuple of tasks associated with a certain project from a db
     def get_project_tasks(self, project_id, cur):
         cur.execute('CALL `get_project_tasks`(?)', (project_id, )) 
         results = cur.fetchall()
@@ -67,6 +70,7 @@ class User:
         project_tasks = tuple(dict(zip(keys, result)) for result in results)
         return project_tasks
     
+    # Return essential task data from the db as a tuple of dictionaries
     def get_task_data(self, task_id, cur):
         cur.execute('CALL `get_task_data`(?)', (task_id, ))
         result = list(cur.fetchone())
@@ -85,10 +89,12 @@ class Admin(User):
     def __init__(self, empl_data):
         super().__init__(empl_data)
     
+    # Self explanatory
     def add_department(self, dep_name, cur):
         if self.is_admin == 1 and dep_name:
             cur.execute('CALL `add_department`(?)', (dep_name, ))
     
+    # Return a tuple of dictionaries representing all existing departments if no choice is provided, else only return info on one certain department (based on its id) from the db
     def admin_get_departments(self, cur, choice = None):
         if self.is_admin == 1:
             dep = None
@@ -104,6 +110,7 @@ class Admin(User):
             else:
                 return departments
     
+    # Same stuff as departments, except now do that with employees
     def admin_get_employees(self, cur, choice = None):
         if self.is_admin == 1:
             cur.execute('CALL `admin_get_employees`')
@@ -118,6 +125,7 @@ class Admin(User):
             else:
                 return employees
         
+    # Same, but with projects
     def admin_get_projects(self, cur, choice = None):
         if self.is_admin == 1:
             cur.execute('CALL `admin_get_projects`')
@@ -132,10 +140,12 @@ class Admin(User):
             else:
                 return projects
         
+    # Add a new employee to the db, give certain rights based on is_head, is_manager, is_admin statuses
     def add_employee(self, empl_name, empl_username, empl_password, empl_email, empl_position, dep_id, empl_is_head, empl_is_manager, empl_is_admin, cur):
         if self.is_admin == 1:
             cur.execute('CALL `add_employee`(?, ?, ?, ?, ?, ?, ?, ?, ?)', (empl_name, empl_username, empl_password, empl_email, empl_position, dep_id, empl_is_head, empl_is_manager, empl_is_admin))
     
+    # Get a list of all project managers THAT DO NOT(!) CURRENTLY MANAGE ANY PROJECT
     def get_project_managers(self, cur):
         if self.is_admin == 1:
             cur.execute('CALL `get_project_managers`')
@@ -144,26 +154,32 @@ class Admin(User):
             pms = tuple(dict(zip(keys, result)) for result in results)
             return pms
     
+    # Add a new project to the db and assign a project manager to it (Also changes is_manager status for the assigned pm in db to 1, giving him the rights to create/modify tasks)
     def add_project(self, pr_name, pr_description, pr_start, pr_finish, pm, cur):
         if self.is_admin == 1:
             cur.execute('CALL `add_project`(?, ?, ?, ?, ?)', (pr_name, pr_description, pr_start, pr_finish, pm))
 
+    # Remove a department from a db. THIS ALSO REMOVES ALL EMPLOYEES IN THE CURRENT DEPARTMENT
     def remove_department(self, dep_id, cur):
         if self.is_admin == 1 and dep_id:
             cur.execute('CALL `remove_department`(?)', (dep_id, ))
     
+    # Remove an employee from a db. THIS ALSO REMOVES ALL TASKS ASSOCIATED WITH THIS EMPLOYEE.
     def remove_employee(self, empl_id, cur):
         if self.is_admin == 1 and empl_id:
             cur.execute('CALL `remove_employee`(?)', (empl_id, ))
     
+    # Remove a project from the db. THIS DOES NOT AUTOMATICALLY DELETE AN EMPLOYEES DATA
     def remove_project(self, pr_id, cur):
         if self.is_admin == 1 and pr_id:
             cur.execute('CALL `remove_project`(?)', (pr_id, ))            
 
+    # Change department name
     def change_department(self, dep_id, new_dep_name, cur):
         if self.is_admin == 1 and new_dep_name:
             cur.execute('CALL `change_department`(?, ?)', (dep_id, new_dep_name))
     
+    # Change employee data
     def change_employee(
         self, 
         cur, 
@@ -206,6 +222,7 @@ class Admin(User):
             if new_is_admin:
                 cur.execute('CALL `change_is_admin`(?, ?)', (empl_id, new_is_admin))
     
+    # Change project data
     def change_project(
         self, 
         cur, 
@@ -238,12 +255,15 @@ class Head(User):
     def __init__(self, empl_data):
         super().__init__(empl_data)
     
+    # Add a new task into the database (ONLY TO EMPLOYEES ASSIGNED TO THE USER'S DEPARTMENT)
     def add_task(self, task_name, task_description, task_deadline, employee_id, cur):
         cur.execute('CALL `add_task`(?, ?, ?, ?, ?, NULL)', (task_name, task_description, task_deadline, employee_id, self.id))
 
+    # Delete a task from the database
     def remove_task(self, task_id, cur):
         cur.execute('CALL `remove_task`(?)', (task_id, ))
     
+    # Return a tuple of tasks assigned by the user himself
     def get_tasks_assigned_by(self, cur):
         cur.execute('CALL `get_tasks_assigned_by`(?)', (self.id, ))
         results = cur.fetchall()
@@ -251,6 +271,7 @@ class Head(User):
         tasks = tuple(dict(zip(keys, result)) for result in results)
         return tasks
     
+    # Change a given task data
     def change_task(self, cur, task_id = None, new_name = None, new_description = None, new_deadline = None, new_employee = None):
         if self.is_head == 1:
             if new_name:
@@ -273,11 +294,13 @@ class Manager(User):
         pr_id = self.get_my_project_id(cur)
         self.project_id = pr_id
 
+    # Get an id of the project, that the user currently manages
     def get_my_project_id(self, cur):
         cur.execute('CALL `get_my_project_id`(?)', (self.id, ))
         pr_id = cur.fetchone()[0]
         return pr_id
     
+    # Get a tuple of all employees enlisted on the user's project
     def get_employees(self, cur):
         cur.execute('CALL `get_employees`(?)', (self.project_id, ))
         results = cur.fetchall()
@@ -285,6 +308,7 @@ class Manager(User):
         employees = tuple(dict(zip(keys, result)) for result in results)
         return employees
     
+    # Get essential data about an employee in the project
     def get_employee_data(self, empl_id, cur):
         cur.execute('CALL `get_employee_data`(?)', (empl_id, ))
         result = cur.fetchone()
@@ -292,12 +316,15 @@ class Manager(User):
         data = dict(zip(keys, result))
         return data
     
+    # Add a new task and assign an employee to it (ONLY TO EMPLOYEES ASSIGNED TO THE PROJECT)
     def add_task(self, task_name, task_description, task_deadline, employee_id, cur):
         cur.execute('CALL `add_task`(?, ?, ?, ?, ?, ?)', (task_name, task_description, task_deadline, employee_id, self.id, self.project_id))
     
+    # Delete a task
     def remove_task(self, task_id, cur):
         cur.execute('CALL `remove_task`(?)', (task_id, ))
     
+    # Same as in Head class
     def get_tasks_assigned_by(self, cur):
         cur.execute('CALL `get_tasks_assigned_by`(?)', (self.id, ))
         results = cur.fetchall()
@@ -305,6 +332,7 @@ class Manager(User):
         tasks = tuple(dict(zip(keys, result)) for result in results)
         return tasks
     
+    # Same as in Head class
     def change_task(self, cur, task_id = None, new_name = None, new_description = None, new_deadline = None, new_employee = None):
         if self.is_manager == 1:
             if new_name:
@@ -319,18 +347,20 @@ class Manager(User):
             if new_employee:
                 cur.execute('CALL `reassign_task`(?, ?)', (task_id, new_employee))
 
+    # Assign a new employee on a project
     def add_employee_to_project(self, empl_id, role, cur):
         cur.execute('CALL `add_employee_to_project`(?, ?, ?)', (self.project_id, empl_id, role))
-        
+    
+    # Remove an employee from a project
     def deassign_employee(self, pr_id, empl_id, cur):
         cur.execute('CALL `deassign_employee`(?, ?)', (pr_id, empl_id))
-        
+    
+    # Change employee's role in a project
     def change_employee_role(self, pr_id, empl_id, new_role, cur):
         cur.execute('CALL `change_employee_role`(?, ?, ?)', (pr_id, empl_id, new_role))
 
-    
+# Connect to the db, check if the user exists in it, assign a specific role in MariaDB and return user data to init an object of the classes above in Flask
 def check_user(username, password):
-    # Establish connection to MariaDB server
     try:
         conn = mariadb.connect(
             user = username,
@@ -347,7 +377,6 @@ def check_user(username, password):
     cur.execute('CALL `check_employee`(?, ?)', (username, password))
     result = cur.fetchone()
     
-    print(result)
     if result:
         keys = ('id', 'name', 'username', 'password', 'email', 'position', 'is_head', 'is_manager', 'is_admin', 'department_id', 'department_name')
         empl_data = dict(zip(keys, result))
@@ -356,7 +385,7 @@ def check_user(username, password):
     else:
         return
 
-
+# Protect a url from being accessed by not being logged in
 def login_required(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
@@ -365,7 +394,7 @@ def login_required(f):
         return f(*args, **kwargs)
     return decorated_function
 
-
+# Establish a connection to the db and return conn object and cur object for actions in Flask. Also sets a role for the current user based on the username and password
 def connect(username, password):
     conn = mariadb.connect(
         username = username,
@@ -384,15 +413,15 @@ def connect(username, password):
         cur.execute('SET ROLE admin')
     return conn, cur
 
-
+# Close the db connection
 def disconnect(conn, cur):
     cur.close()
     conn.close()
     
-
+# Convert a string of date and a string of time into a datetime object for inserting into the database (particularly into the tasks table)
 def convert_dl(date, time):
     return datetime.strptime(f'{date} {time}', '%Y-%m-%d %H:%M')
 
-
+# Convert a datetime obkect iinto a string of date and a string of time for proper formatting and display in HTML forms on the web app
 def convert_dl_back(dt):
     return dt.date(), dt.time().strftime('%H:%M')

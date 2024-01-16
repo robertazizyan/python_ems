@@ -4,44 +4,53 @@
 {% endblock %}
 
 {% block main %}
+    <nav style="--bs-breadcrumb-divider: '/';" aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="/">Home</a></li>
+            <li class="breadcrumb-item"><a href="/admin">Admin</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Modify a Project</li>
+        </ol>
+    </nav>
     <form action = "{{ url_for('admin_project', id = id) }}" method = "post">
-        <table>
-            <tr>
-                <th>Project Name</th>
-                <th>Project Description</th>
-                <th>Project Start Date</th>
-                <th>Project Finish Date</th>
-                <th>Project Manager</th>
-            </tr>
-            <tr>
-                <td>
-                    <input type = "text" name = "name" value = "{{ project.name }}" required>
-                </td>
-                <td>
-                    <textarea name = "description" value = "{{ project.description }}" required>{{ project.description }}</textarea>
-                </td>
-                <td>
-                    <input type = "date" name = "start" value = "{{ project.start }}" required>
-                </td>
-                <td>
-                    <input type = "date" name = "finish" value = "{{ project.finish }}" required>
-                </td>
-                <td>
-                    <select name = "pm" required>
-                        {% for pm in pms %}
-                            {% if pm.id == project.pm_id %}
-                                <option value = {{ pm.id }} selected>{{ pm.name }}</option>
-                            {% else %}
-                                <option value = {{ pm.id }}>{{ pm.name }}</option>  
-                            {% endif %}  
-                        {% endfor %}
-                    </select>
-                </td>
-            </tr>
-        </table>
-        <button type = "submit">Modify project</button>
+        <div class="table">
+            <table>
+                <tr>
+                    <th>Project Name</th>
+                    <th>Project Description</th>
+                    <th>Project Start Date</th>
+                    <th>Project Finish Date</th>
+                    <th>Project Manager</th>
+                </tr>
+                <tr>
+                    <td>
+                        <input type = "text" name = "name" value = "{{ project.name }}" required>
+                    </td>
+                    <td>
+                        <textarea name = "description" value = "{{ project.description }}" required>{{ project.description }}</textarea>
+                    </td>
+                    <td>
+                        <input type = "date" name = "start" value = "{{ project.start }}" required>
+                    </td>
+                    <td>
+                        <input type = "date" name = "finish" value = "{{ project.finish }}" required>
+                    </td>
+                    <td>
+                        <select name = "pm" required>
+                            {% for pm in pms %}
+                                {% if pm.id == project.pm_id %}
+                                    <option value = {{ pm.id }} selected>{{ pm.name }}</option>
+                                {% else %}
+                                    <option value = {{ pm.id }}>{{ pm.name }}</option>  
+                                {% endif %}  
+                            {% endfor %}
+                        </select>
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <button type = "submit" class="submit">Modify project</button>
     </form>
     <form action = "{{ url_for('admin_remove_project', id = id)}}" method = "post">
-        <button type="submit">Delete project</button>
+        <button type="submit" class="submit">Delete project</button>
     </form>
 {% endblock %}

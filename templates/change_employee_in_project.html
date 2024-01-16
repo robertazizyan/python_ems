@@ -5,24 +5,40 @@
 {% endblock %}
 
 {% block main %}
+    <nav style="--bs-breadcrumb-divider: '/';" aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="/">Home</a></li>
+            <li class="breadcrumb-item"><a href="{{ url_for('project', id = id)}}">Project</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Change employee in a project</li>
+        </ol>
+    </nav>
+    <nav style="--bs-breadcrumb-divider: '/';" aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="/">Home</a></li>
+            <li class="breadcrumb-item"><a href="/tasks">Tasks</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Modify a Project</li>
+        </ol>
+    </nav>
     <form action="{{ url_for('change_employee_in_project', id = id, empl_id = empl_id)}}" method = "post">
-        <table>
-            <tr>
-                <th>Employee</th>
-                <th>Role</th>
-            </tr>
-            <tr>
-                <td>
-                    {{ empl_data.name }}
-                </td>
-                <td>
-                    <input type="text" name="role" value ="{{ empl_data.role }}">
-                </td>
-            </tr>
-        </table>
-        <button type="submit">Save changes</button>
+        <div class="table">
+            <table>
+                <tr>
+                    <th>Employee</th>
+                    <th>Role</th>
+                </tr>
+                <tr>
+                    <td>
+                        {{ empl_data.name }}
+                    </td>
+                    <td>
+                        <input type="text" name="role" value ="{{ empl_data.role }}">
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <button type="submit" class="submit">Save changes</button>
     </form>
     <form action = "{{url_for('remove_employee_from_project', id = id, empl_id = empl_id)}}" method = "post">
-        <button type="submit">Remove employee from project</button>
+        <button type="submit" class="submit">Remove employee from project</button>
     </form>
 {% endblock %}

@@ -4,20 +4,29 @@
 {% endblock %}
 
 {% block main %}
+    <nav style="--bs-breadcrumb-divider: '/';" aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="/">Home</a></li>
+            <li class="breadcrumb-item"><a href="/admin">Admin</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Modify a Department</li>
+        </ol>
+    </nav>
     <form action = "{{ url_for('admin_department', id = id)}}" method = "post">    
-        <table>
-            <tr>
-                <th>Department Name</th>
-            </tr>
-            <tr>
-                <td>
-                    <input type="text" name="name" value ="{{ department.name }}" required>
-                </td>
-            </tr>
-        </table>
-        <button type = "submit">Modify department</button>
+        <div class="table">
+            <table>
+                <tr>
+                    <th>Department Name</th>
+                </tr>
+                <tr>
+                    <td>
+                        <input type="text" name="name" value ="{{ department.name }}" required>
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <button type = "submit" class="submit">Modify department</button>
     </form>
     <form action = "{{ url_for('admin_remove_department', id = id)}}", method = "post">
-        <button type="submit">Delete department</button>
+        <button type="submit" class="submit">Delete department</button>
     </form>
 {% endblock %}

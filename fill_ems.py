@@ -66,6 +66,7 @@ def main():
     with open('csv_files/projects_employees.csv', mode = 'r') as file:
         reader = csv.DictReader(file)
         for line in reader:
+            cur.execute('CALL `add_employee_to_project`(?, ?, ?)', (int(line['project_id']), int(line['employee_id']), line['role']))
 
     # Add tasks
     with open('csv_files/tasks.csv', mode = 'r') as file:

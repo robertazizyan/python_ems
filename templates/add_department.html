@@ -4,17 +4,26 @@
 {% endblock %}
 
 {% block main %}
+    <nav style="--bs-breadcrumb-divider: '/';" aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="/">Home</a></li>
+            <li class="breadcrumb-item"><a href="/admin">Admin</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Add a new department</li>
+        </ol>
+    </nav>
     <form action = "/admin/add_department" method = "post">
-        <table>
-            <tr>
-                <th>Department Name</th>
-            </tr>
-            <tr>
-                <td>
-                    <input type = "text" name = "department" placeholder = "Department Name" required>
-                </td>
-            </tr>
-        </table>
-        <button type = "submit">Add a new department</button>
+        <div class="table">
+            <table>
+                <tr>
+                    <th>Department Name</th>
+                </tr>
+                <tr>
+                    <td>
+                        <input type = "text" name = "department" placeholder = "Department Name" required>
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <button type = "submit" class="submit">Add a new department</button>
     </form>
 {% endblock %}

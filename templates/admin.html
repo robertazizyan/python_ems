@@ -4,54 +4,74 @@
 {% endblock %}
 
 {% block main %}
-    <p><a href = "{{ url_for('add_department') }}">Add a new department</a></p>
-    <p><a href = "{{ url_for('add_employee') }}">Add a new employee</a></p>
-    <p><a href = "{{ url_for('add_project') }}">Add a new project</a></p>
+    <nav style="--bs-breadcrumb-divider: '/';" aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="/">Home</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Admin</li>
+        </ol>
+    </nav>
+    <div class="header">
+        <p><a href = "{{ url_for('add_department') }}">Add a new department</a></p>
+        <p><a href = "{{ url_for('add_employee') }}">Add a new employee</a></p>
+        <p><a href = "{{ url_for('add_project') }}">Add a new project</a></p>
+    </div>
 
-    <p>List of all departments</p>
-    <table>
-        <tr>
-            <th>Department name</th>
-        </tr>
-        {% for department in departments %}
+    <div class="header">
+        <p><b>List of all departments</b></p>
+    </div>
+    <div class="table">
+        <table>
             <tr>
-                <td><a href = "{{ url_for('admin_department', id = department.id)}}">{{ department.name }}</a></td>
+                <th>Department name</th>
             </tr>
-        {% endfor %}
-    </table>
-    <p>List of all employees</p>
-    <table>
-        <tr>
-            <th>Employee name</th>
-            <th>Position</th>
-            <th>Department</th>
-        </tr>
-        {% for employee in employees %}
+            {% for department in departments %}
+                <tr>
+                    <td><a href = "{{ url_for('admin_department', id = department.id)}}">{{ department.name }}</a></td>
+                </tr>
+            {% endfor %}
+        </table>
+    </div>
+    <div class="header">
+        <p><b>List of all employees</b></p>
+    </div>
+    <div class="table">
+        <table>
             <tr>
-                <td><a href = "{{ url_for('admin_employee', id = employee.id) }}">{{ employee.name }}</a></td>
-                <td>{{ employee.position }}</td>
-                <td>{{ employee.department_name }}</td>
+                <th>Employee name</th>
+                <th>Position</th>
+                <th>Department</th>
             </tr>
-        {% endfor %}
-    </table>
-    <p>List of all projects</p>
-    <table>
-        <tr>
-            <th>Project name</th>
-            <th>Project description</th>
-            <th>Project start</th>
-            <th>Project finish</th>
-            <th>Project manager</th>
-        </tr>
-        {% for project in projects %}
+            {% for employee in employees %}
+                <tr>
+                    <td><a href = "{{ url_for('admin_employee', id = employee.id) }}">{{ employee.name }}</a></td>
+                    <td>{{ employee.position }}</td>
+                    <td>{{ employee.department_name }}</td>
+                </tr>
+            {% endfor %}
+        </table>
+    </div>
+    <div class="header">
+        <p><b>List of all projects</b></p>
+    </div>
+    <div class="table">
+        <table>
             <tr>
-                <td><a href = "{{ url_for('admin_project', id = project.id) }}">{{ project.name }}</a></td>
-                <td>{{ project.description }}</td>
-                <td>{{ project.start }}</td>
-                <td>{{ project.finish }}</td>
-                <td>{{ project.pm_name }}</td>
+                <th>Project name</th>
+                <th>Project description</th>
+                <th>Project start</th>
+                <th>Project finish</th>
+                <th>Project manager</th>
             </tr>
-        {% endfor %}
-        </tr>
-    </table>
+            {% for project in projects %}
+                <tr>
+                    <td><a href = "{{ url_for('admin_project', id = project.id) }}">{{ project.name }}</a></td>
+                    <td>{{ project.description }}</td>
+                    <td>{{ project.start }}</td>
+                    <td>{{ project.finish }}</td>
+                    <td>{{ project.pm_name }}</td>
+                </tr>
+            {% endfor %}
+            </tr>
+        </table>
+    </div>
 {% endblock %}

@@ -4,37 +4,46 @@
 {% endblock %}
 
 {% block main %}
+    <nav style="--bs-breadcrumb-divider: '/';" aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="/">Home</a></li>
+            <li class="breadcrumb-item"><a href="/admin">Admin</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Add a new project</li>
+        </ol>
+    </nav>
     <form action = "/admin/add_project" method = "post">
-        <table>
-            <tr>
-                <th>Project Name</th>
-                <th>Project Description</th>
-                <th>Project Start Date</th>
-                <th>Project Finish Date</th>
-                <th>Project Manager</th>
-            </tr>
-            <tr>
-                <td>
-                    <input type = "text" name = "name" placeholder = "Project Name" required>
-                </td>
-                <td>
-                    <textarea name = "description" placeholder = "Project Description" required></textarea>
-                </td>
-                <td>
-                    <input type = "date" name = "start" placeholder = "Project Start Date" required>
-                </td>
-                <td>
-                    <input type = "date" name = "finish" placeholder = "Project Finish Date" required>
-                </td>
-                <td>
-                    <select name = "pm" required>
-                        {% for pm in pms %}
-                            <option value = {{ pm.id }}>{{ pm.name }}</option>
-                        {% endfor %}
-                    </select>
-                </td>
-            </tr>
-        </table>
-        <button type = "submit">Add a new project</button>
+        <div class="table">
+            <table>
+                <tr>
+                    <th>Project Name</th>
+                    <th>Project Description</th>
+                    <th>Project Start Date</th>
+                    <th>Project Finish Date</th>
+                    <th>Project Manager</th>
+                </tr>
+                <tr>
+                    <td>
+                        <input type = "text" name = "name" placeholder = "Project Name" required>
+                    </td>
+                    <td>
+                        <textarea name = "description" placeholder = "Project Description" required></textarea>
+                    </td>
+                    <td>
+                        <input type = "date" name = "start" placeholder = "Project Start Date" required>
+                    </td>
+                    <td>
+                        <input type = "date" name = "finish" placeholder = "Project Finish Date" required>
+                    </td>
+                    <td>
+                        <select name = "pm" required>
+                            {% for pm in pms %}
+                                <option value = {{ pm.id }}>{{ pm.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <button type = "submit" class="submit">Add a new project</button>
     </form>
 {% endblock %}

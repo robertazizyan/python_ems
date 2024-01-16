@@ -5,38 +5,47 @@
 {% endblock %}
 
 {% block main %}
+    <nav style="--bs-breadcrumb-divider: '/';" aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="/">Home</a></li>
+            <li class="breadcrumb-item"><a href="/tasks">Tasks</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Create a new task</li>
+        </ol>
+    </nav>
     <form action="/tasks/create_task" method = "post">
-        <table>
-            <tr>
-                <th>Employee</th>
-                <th>Task name</th>
-                <th>Task description</th>
-                <th>Deadline Date</th>
-                <th>Deadline Time</th>
-            </tr>
-            
-            <tr>
-                <td>
-                    <select name="employee" required>
-                        {% for employee in staff %}
-                            <option value = {{ employee.employee_id }}>{{ employee.name }}</option>
-                        {% endfor %}
-                    </select>
-                </td>
-                <td>
-                    <input type="text" name="task_name" placeholder="Task Name" required>
-                </td>
-                <td>
-                    <textarea name="task_description" placeholder="Task Description" required></textarea>
-                </td>
-                <td>
-                    <input type="date" name="deadline_date" placeholder="Deadline Date" required>
-                </td>
-                <td>
-                    <input type ="time" name="deadline_time" placeholder="Deadline Time" required>
-                </td>
-            </tr>
-        </table>
-        <button type="submit">Create task</button>
+        <div class="table">
+            <table>
+                <tr>
+                    <th>Employee</th>
+                    <th>Task name</th>
+                    <th>Task description</th>
+                    <th>Deadline Date</th>
+                    <th>Deadline Time</th>
+                </tr>
+                
+                <tr>
+                    <td>
+                        <select name="employee" required>
+                            {% for employee in staff %}
+                                <option value = {{ employee.employee_id }}>{{ employee.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </td>
+                    <td>
+                        <input type="text" name="task_name" placeholder="Task Name" required>
+                    </td>
+                    <td>
+                        <textarea name="task_description" placeholder="Task Description" required></textarea>
+                    </td>
+                    <td>
+                        <input type="date" name="deadline_date" placeholder="Deadline Date" required>
+                    </td>
+                    <td>
+                        <input type ="time" name="deadline_time" placeholder="Deadline Time" required>
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <button type="submit" class="submit">Create task</button>
     </form>
 {% endblock %}

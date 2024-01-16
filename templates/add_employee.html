@@ -4,63 +4,72 @@
 {% endblock %}
 
 {% block main %}
+    <nav style="--bs-breadcrumb-divider: '/';" aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="/">Home</a></li>
+            <li class="breadcrumb-item"><a href="/admin">Admin</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Add a new employee</li>
+        </ol>
+    </nav>
     <form id="addEmployeeForm" action="/admin/add_employee" method="post">
-        <table>
-            <tr>
-                <th>Employee Name</th>
-                <th>Employee Username</th>
-                <th>Employee Password</th>
-                <th>Employee Email</th>
-                <th>Employee Position</th>
-                <th>Employee Department</th>
-                <th>Employee is a Department head</th>
-                <th>Employee is a Project Manager</th>
-                <th>Employee is an Administrator</th>
-            </tr>
-            <tr>
-                <td>
-                    <input type="text" name="name" placeholder="Employee name" required>
-                </td>
-                <td>
-                    <input type="text" name="username" placeholder="Employee username" required>
-                </td>
-                <td>
-                    <input type="text" name="password" placeholder="Employee password" required>
-                </td>
-                <td>
-                    <input type="text" name="email" placeholder="Employee email" required>
-                </td>
-                <td>
-                    <input type="text" name="position" placeholder="Employee position" required>
-                </td>
-                <td>
-                    <select name="department_id" required>
-                        {% for department in departments %}
-                            <option value={{ department.id }}>{{ department.name }}</option>
-                        {% endfor %}
-                    </select>
-                </td>
-                <td>
-                    <select name="is_head" id="isHead" required>
-                        <option value="0" selected>Is not a department head</option>
-                        <option value="1">Is a department head</option>
-                    </select>
-                </td>
-                <td>
-                    <select name="is_manager" id="isManager" required>
-                        <option value="0" selected>Is not a project manager</option>
-                        <option value="1">Is a project manager</option>
-                    </select>
-                </td>
-                <td>
-                    <select name="is_admin" id="isAdmin" required>
-                        <option value="0" selected>Is not a database admin</option>
-                        <option value="1">Is a database admin</option>
-                    </select>
-                </td>
-            </tr>
-        </table>
-        <button type="submit">Add a new employee</button>
+        <div class="table">
+            <table>
+                <tr>
+                    <th>Employee Name</th>
+                    <th>Employee Username</th>
+                    <th>Employee Password</th>
+                    <th>Employee Email</th>
+                    <th>Employee Position</th>
+                    <th>Employee Department</th>
+                    <th>Employee is a Department head</th>
+                    <th>Employee is a Project Manager</th>
+                    <th>Employee is an Administrator</th>
+                </tr>
+                <tr>
+                    <td>
+                        <input type="text" name="name" placeholder="Employee name" required>
+                    </td>
+                    <td>
+                        <input type="text" name="username" placeholder="Employee username" required>
+                    </td>
+                    <td>
+                        <input type="text" name="password" placeholder="Employee password" required>
+                    </td>
+                    <td>
+                        <input type="text" name="email" placeholder="Employee email" required>
+                    </td>
+                    <td>
+                        <input type="text" name="position" placeholder="Employee position" required>
+                    </td>
+                    <td>
+                        <select name="department_id" required>
+                            {% for department in departments %}
+                                <option value={{ department.id }}>{{ department.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </td>
+                    <td>
+                        <select name="is_head" id="isHead" required>
+                            <option value="0" selected>Is not a department head</option>
+                            <option value="1">Is a department head</option>
+                        </select>
+                    </td>
+                    <td>
+                        <select name="is_manager" id="isManager" required>
+                            <option value="0" selected>Is not a project manager</option>
+                            <option value="1">Is a project manager</option>
+                        </select>
+                    </td>
+                    <td>
+                        <select name="is_admin" id="isAdmin" required>
+                            <option value="0" selected>Is not a database admin</option>
+                            <option value="1">Is a database admin</option>
+                        </select>
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <button type="submit" class="submit">Add a new employee</button>
     </form>
 
     <script>

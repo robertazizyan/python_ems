@@ -5,31 +5,39 @@
 {% endblock %}
 
 {% block main %}
+    <nav style="--bs-breadcrumb-divider: '/';" aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="/">Home</a></li>
+            <li class="breadcrumb-item"><a href="{{ url_for('project', id = id)}}">Project</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Add a new Employee to the Project</li>
+        </ol>
+    </nav>
     <form action="{{ url_for('add_employee_to_project', id = id)}}" method="post" id="employeeForm">
-        <table>
-            <tr>
-                <th>Employee</th>
-                <th>Position</th>
-                <th>Department</th>
-                <th>Role</th>
-            </tr>
-
-            <tr>
-                <td>
-                    <select name="employee" id="employeeSelect" required onchange="updateEmployeeDetails()">
-                        {% for employee in employees %}
-                            <option value="{{ employee.id }}" data-position="{{ employee.position }}" data-department="{{ employee.department }}">{{ employee.name }}</option>
-                        {% endfor %}
-                    </select>
-                </td>
-                <td id="positionCell"></td>
-                <td id="departmentCell"></td>
-                <td>
-                    <input type="text" name="role" placeholder="Role in the project" required>
-                </td>
-            </tr>
-        </table>
-        <button type="submit">Add employee</button>
+        <div class="table">
+            <table>
+                <tr>
+                    <th>Employee</th>
+                    <th>Position</th>
+                    <th>Department</th>
+                    <th>Role</th>
+                </tr>
+                <tr>
+                    <td>
+                        <select name="employee" id="employeeSelect" required onchange="updateEmployeeDetails()">
+                            {% for employee in employees %}
+                                <option value="{{ employee.id }}" data-position="{{ employee.position }}" data-department="{{ employee.department }}">{{ employee.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </td>
+                    <td id="positionCell"></td>
+                    <td id="departmentCell"></td>
+                    <td>
+                        <input type="text" name="role" placeholder="Role in the project" required>
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <button type="submit" class="submit">Add employee</button>
     </form>
 
     <script>

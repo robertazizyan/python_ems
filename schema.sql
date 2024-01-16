@@ -43,7 +43,7 @@ CREATE TABLE IF NOT EXISTS `projects_employees` (
     `role` VARCHAR(100) NOT NULL,
     PRIMARY KEY (`project_id`,`employee_id`),
     FOREIGN KEY (`project_id`) REFERENCES `projects` (`id`) ON DELETE CASCADE,
-    FOREIGN KEY (`employee_id`) REFERENCES `employees` (`id`) ON DELETE CASCADE
+    FOREIGN KEY (`employee_id`) REFERENCES `employees` (`id`)
 );
 
 CREATE TABLE IF NOT EXISTS `tasks` (
@@ -62,7 +62,7 @@ CREATE TABLE IF NOT EXISTS `employees_tasks` (
     `assigned_by` INT NOT NULL,
     `project_related` INT DEFAULT NULL,
     PRIMARY KEY(`employee_id`,`task_id`, `assigned_by`),
-    FOREIGN KEY (`employee_id`) REFERENCES `employees` (`id`) ON DELETE CASCADE,
+    FOREIGN KEY (`employee_id`) REFERENCES `employees` (`id`),
     FOREIGN KEY (`task_id`) REFERENCES `tasks` (`id`) ON DELETE CASCADE,
     FOREIGN KEY(`assigned_by`) REFERENCES `employees`(`id`),
     FOREIGN KEY (`project_related`) REFERENCES `projects` (`id`) ON DELETE CASCADE
