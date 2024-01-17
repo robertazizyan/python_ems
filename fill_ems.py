@@ -2,15 +2,16 @@ import sys
 import mariadb
 import csv
 
+
 def main():
     #connect to the database first
     try:
         conn = mariadb.connect(
             user = 'ems_admin',
             password = 'ems_admin',
+            database = 'ems',
             host = 'localhost',
             port = 3306,
-            database = 'ems',
             autocommit = True
         )
         print('Connected to database')

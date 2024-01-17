@@ -17,6 +17,14 @@ def main():
         print('Error connecting to the database')
         sys.exit(e)
 
+    # DROP the database and roles associated with it
+    cur.execute('DROP DATABASE ems')
+    cur.execute('DROP ROLE admin')
+    cur.execute('DROP ROLE employee')
+    cur.execute('DROP ROLE department_head')
+    cur.execute('DROP ROLE project_manager')
+
+    # Delete all users from the database
     with open('csv_files/employees.csv', mode = 'r') as file:
         reader = csv.DictReader(file)
         for line in reader:

@@ -1,6 +1,5 @@
 import sys
 import mariadb
-from werkzeug.security import check_password_hash, generate_password_hash
 from flask import redirect, render_template, session 
 from functools import wraps
 from datetime import datetime, time

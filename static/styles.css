@@ -50,13 +50,13 @@ a {
     padding: 10px 20px;
     background-color: rgb(200, 250, 217);
     color: #000000;
-    border: none;
+    border: 1px black solid;
     border-radius: 5px;
     cursor: pointer;
 }
 
 .submit:hover {
-    background-color: #3367d1;
+    background-color: #9fbfff;
 }
 
 
